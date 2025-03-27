@@ -17,6 +17,7 @@ public class Epic extends Task {
     public List<Integer> getSubtaskIds() {
         return subtaskIds;
     }
+
     @Override
     public String toString() {
         return "Epic{" +
@@ -28,9 +29,9 @@ public class Epic extends Task {
                 '}';
     }
 
-    public void updateStatus(HashMap<Integer, Subtask> subtasks) {
+    protected void updateStatus(HashMap<Integer, Subtask> subtasks) {
         if (subtaskIds.isEmpty()) {
-            setStatus(Status.NEW);
+            super.setStatus(Status.NEW);
             return;
         }
         boolean subtaskDone = true;
@@ -46,11 +47,11 @@ public class Epic extends Task {
                 }
             }
         }
-        if (subtaskDone){
+        if (subtaskDone) {
             setStatus(Status.DONE);
         } else if (subtaskProces) {
             setStatus(Status.IN_PROGRESS);
-        } else  {
+        } else {
             setStatus(Status.NEW);
         }
 

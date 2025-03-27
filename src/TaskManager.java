@@ -62,24 +62,28 @@ public class TaskManager {
     }
 
     public void updateTask(Task update) { //принимаем новую задачу
-        Task i = tasks.get(update.getId());
-        if (i != null) {
-            tasks.put(i.getId(), update);
+        Task updats = tasks.get(update.getId());
+        if (updats != null) {
+            tasks.put(updats.getId(), update);
         }
     }
 
     public void updateSubtask(Subtask update) {
-        Subtask i = subtasks.get(update.getId());
-        if (i != null){
-            subtasks.put(i.getId(),update);
+        Subtask updats = subtasks.get(update.getId());
+        if (updats != null) {
+            subtasks.put(updats.getId(), update);
+            Epic epic = epics.get(update.getId());
+            if (epic != null) {
+                epic.updateStatus(subtasks);
+            }
         }
     }
-    public void updateEpic(Epic update){
-        Epic i=epics.get(update.getId());
-        if (i!= null){
-            epics.put(i.getId(),update);
-        }
 
+    public void updateEpic(Epic update) {
+        Epic updats = epics.get(update.getId());
+        if (updats != null) {
+            epics.put(updats.getId(), update);
+        }
     }
 
 }
