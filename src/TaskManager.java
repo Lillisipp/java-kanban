@@ -1,6 +1,5 @@
 
 public interface TaskManager {
-     static int idCounter = 0;
     int generatorID();
 
     void removeTask();
@@ -32,4 +31,6 @@ public interface TaskManager {
     void updateSubtask(Subtask update);
 
     void updateEpic(Epic update);
+
+
 }

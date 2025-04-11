@@ -1,5 +1,5 @@
-public class Meneger {
-    private Meneger() {
+public class Managers {
+    private Managers() {
     }
 
     public static HistoryManager getDefaultHistory() {

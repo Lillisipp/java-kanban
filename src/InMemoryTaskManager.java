@@ -1,7 +1,4 @@
-import java.awt.*;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager {
     private HashMap<Integer, Task> tasks = new HashMap<>();
@@ -9,8 +6,9 @@ public class InMemoryTaskManager implements TaskManager {
     private HashMap<Integer, Epic> epics = new HashMap<>();
     private static int idCounter = 0;
     private HistoryManager historyManager;
+
    public InMemoryTaskManager(){
-       this.historyManager = Meneger.getDefaultHistory();
+       this.historyManager = Managers.getDefaultHistory();
    }
 
 
