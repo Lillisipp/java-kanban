@@ -11,6 +11,7 @@ public class InMemoryTaskManager implements TaskManager {
        this.historyManager = Managers.getDefaultHistory();
    }
 
+
     @Override
     public int generatorID() {
         return ++idCounter;
