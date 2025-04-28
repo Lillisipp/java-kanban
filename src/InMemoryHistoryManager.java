@@ -1,4 +1,7 @@
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class InMemoryHistoryManager implements HistoryManager {
     private Map<Integer, Node> history = new LinkedHashMap<>();
@@ -7,8 +10,8 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void remove(int id) {
-        Node node=history.remove(id);
-        if (node!=null){
+        Node node = history.remove(id);
+        if (node != null) {
             removeNode(node);
         }
     }
