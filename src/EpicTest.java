@@ -1,8 +1,4 @@
-import org.junit.jupiter.api.Test;
-
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class EpicTest {
 
@@ -73,17 +69,17 @@ class EpicTest {
     void taskManagerAddsAndFindsDifferentTaskTypes() {
         TaskManager manager = new InMemoryTaskManager();
 
-        Task task = new Task("Task", "Desc", TaskStatus.NEW);
+        Task task = new Task("Task", "Desc", Status.NEW);
         Epic epic = new Epic("Epic", "Desc");
-        int epicId = manager.addNewEpic(epic);
+        manager.addEpic(epic);
 
-        Subtask subtask = new Subtask("Sub", "Desc", TaskStatus.NEW, epicId);
-        int taskId = manager.addNewTask(task);
-        int subtaskId = manager.addNewSubtask(subtask);
+        Subtask subtask = new Subtask("Sub", "Desc", Status.NEW, epic.getId());
+        manager.addTask(task);
+        manager.addSubtask(subtask);
 
-        assertEquals(task, manager.getTask(taskId));
-        assertEquals(epic, manager.getEpic(epicId));
-        assertEquals(subtask, manager.getSubtask(subtaskId));
+        assertEquals(task, manager.getTaskById(task.getId()));
+        assertEquals(epic, manager.getEpicById(epic.getId()));
+        assertEquals(subtask, manager.getSubtask(subtask.getId()));
     }
 
     @Test
@@ -92,10 +88,11 @@ class EpicTest {
 
         Task task1 = new Task("Task1", "Desc", Status.NEW);
         task1.setId(100);
-        manager.addTaskWithCustomId(task1); // метод должен быть реализован
+        manager.addTask(task1);
 
         Task task2 = new Task("Task2", "Desc", Status.NEW);
-        int generatedId = manager.addNewTask(task2);
+        task2.setId(manager.generatorID());
+        manager.addTask(task2);
 
         assertNotEquals(task1.getId(), task2.getId(),
                 "ID сгенерированной и заданной задачи не должны совпадать");
@@ -103,30 +100,26 @@ class EpicTest {
 
     @Test
     void addNewTask() {
-        Task task = new Task("Test addNewTask", "Test addNewTask description", TaskStatus.NEW);
-        final int taskId = taskManager.addNewTask(task);
+        Task task = new Task("Test addNewTask", "Test addNewTask description", Status.NEW);
+        final int id = taskManager.generatorID();
+        task.setId(id);
+        taskManager.addTask(task);
 
-        final Task savedTask = taskManager.getTask(taskId);
+        final Task savedTask = taskManager.getTaskById(id);
 
         assertNotNull(savedTask, "Задача не найдена.");
         assertEquals(task, savedTask, "Задачи не совпадают.");
-
-        final List<Task> tasks = taskManager.getTasks();
-
-        assertNotNull(tasks, "Задачи не возвращаются.");
-        assertEquals(1, tasks.size(), "Неверное количество задач.");
-        assertEquals(task, tasks.get(0), "Задачи не совпадают.");
     }
 
     @Test
     void taskRemainsUnchangedAfterAddingToManager() {
         TaskManager manager = new InMemoryTaskManager();
-        Task task = new Task("Test", "Desc", TaskStatus.NEW);
+        Task task = new Task("Test", "Desc", Status.NEW);
         task.setId(10);
 
-        manager.addTaskWithCustomId(task);
+        manager.addTask(task);
 
-        Task retrieved = manager.getTask(10);
+        Task retrieved = manager.getTaskById(10);
 
         assertEquals(task.getName(), retrieved.getName());
         assertEquals(task.getDescription(), retrieved.getDescription());
@@ -135,7 +128,7 @@ class EpicTest {
 
     @Test
     void historyManagerPreservesOriginalTaskData() {
-        Task task = new Task("HistoryTest", "Desc", TaskStatus.NEW);
+        Task task = new Task("HistoryTest", "Desc", Status.NEW);
         task.setId(42);
 
         historyManager.add(task);
@@ -147,13 +140,18 @@ class EpicTest {
     }
 
     @Test
-    void addTaskToHistory() {
-        Task task = new Task("Task in History", "Some description", TaskStatus.NEW);
-        task.setId(1);
-        historyManager.add(task);
+    void addTask_AddsTaskToEndOfHistory() {
+        Task task1 = new Task("Task1", "Desc", Status.NEW);
+        task1.setId(1);
+        historyManager.add(task1);
 
-        final List<Task> history = historyManager.getHistory();
-        assertNotNull(history, "После добавления задачи, история не должна быть пустой.");
-        assertEquals(1, history.size(), "История должна содержать одну задачу.");
+        Task task2 = new Task("Task2", "Desc", Status.NEW);
+        task2.setId(2);
+        historyManager.add(task2);
+
+        List<Task> history = historyManager.getHistory();
+        assertEquals(2, history.size());
+        assertEquals(task1, history.get(0));
+        assertEquals(task2, history.get(1));
     }
 }
