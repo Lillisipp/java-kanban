@@ -1,10 +1,7 @@
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    private Map<Integer, Node> history = new LinkedHashMap<>();
+    private Map<Integer, Node> history = new HashMap<>();
     private Node head;
     private Node tail;
 
@@ -22,7 +19,7 @@ public class InMemoryHistoryManager implements HistoryManager {
             return;
         } else {
             remove(task.getId());
-            LinkLast(task);
+            linkLast(task);
         }
         if (history.size() > 10) {
             Integer firstKey = history.keySet().iterator().next();
@@ -41,7 +38,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         return history;
     }
 
-    public void LinkLast(Task task) {
+    public void linkLast(Task task) {
         final Node oldTail = tail;
         final Node newNode = new Node(oldTail, task, null);
         tail = newNode;
