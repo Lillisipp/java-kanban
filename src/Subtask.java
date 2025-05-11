@@ -3,7 +3,7 @@ public class Subtask extends Task {
     //подзадачи эпика
 
     public Subtask(String nameTask, String description, int epicId) {
-        super(nameTask, description);
+        super(nameTask, description, TaskType.SUBTASK);
         this.epicId = epicId;
     }
 

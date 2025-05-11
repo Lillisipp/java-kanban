@@ -5,11 +5,13 @@ public class Task {
     private String description;
     private int id;
     private Status status;
+    private TaskType taskType;
 
-    public Task(String nameTask, String description) {
+    public Task(String nameTask, String description, TaskType taskType) {
         this.nameTask = nameTask;
         this.description = description;
         this.status = Status.NEW;//по умолчанию задача новая
+        this.taskType = taskType;
     }
 
     public String getNameTask() {
@@ -42,6 +44,14 @@ public class Task {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public TaskType getTaskType() {
+        return taskType;
+    }
+
+    public void setTaskType(TaskType taskType) {
+        this.taskType = taskType;
     }
 
     @Override
