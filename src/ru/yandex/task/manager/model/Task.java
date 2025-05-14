@@ -1,3 +1,8 @@
+package ru.yandex.task.manager.model;
+
+import ru.yandex.task.manager.model.enums.Status;
+import ru.yandex.task.manager.model.enums.TaskType;
+
 import java.util.Objects;
 
 public class Task {
@@ -5,11 +10,13 @@ public class Task {
     private String description;
     private int id;
     private Status status;
+    private TaskType taskType;
 
-    public Task(String nameTask, String description) {
+    public Task(String nameTask, String description, TaskType taskType) {
         this.nameTask = nameTask;
         this.description = description;
         this.status = Status.NEW;//по умолчанию задача новая
+        this.taskType = taskType;
     }
 
     public String getNameTask() {
@@ -44,6 +51,14 @@ public class Task {
         this.status = status;
     }
 
+    public TaskType getTaskType() {
+        return taskType;
+    }
+
+    public void setTaskType(TaskType taskType) {
+        this.taskType = taskType;
+    }
+
     @Override
     public boolean equals(Object object) {
         if (object == null || getClass() != object.getClass()) return false;
@@ -58,7 +73,7 @@ public class Task {
 
     @Override
     public String toString() {
-        return "Task{" +
+        return "model.Task{" +
                 "nameTask='" + nameTask + '\'' +
                 ", description='" + description + '\'' +
                 ", id=" + id +

@@ -1,18 +1,24 @@
+package ru.yandex.task.manager.model;
+
+import ru.yandex.task.manager.model.enums.TaskType;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import static ru.yandex.task.manager.model.enums.Status.*;
 
 public class Epic extends Task {
     private List<Integer> subtaskIds;
 
     public Epic(String nameTask, String description) {
-        super(nameTask, description);
+        super(nameTask, description, TaskType.EPIC);
         this.subtaskIds = new ArrayList<>();
     }
 
     public void addSubtask(int subtaskId) {
         if (subtaskId == this.getId()) {
-            throw new IllegalArgumentException("Epic не может быть своим сабтаском");
+            throw new IllegalArgumentException("model.Epic не может быть своим сабтаском");
         }
         subtaskIds.add(subtaskId);
     }
@@ -23,7 +29,7 @@ public class Epic extends Task {
 
     @Override
     public String toString() {
-        return "Epic{" +
+        return "model.Epic{" +
                 "id=" + getId() +
                 ", title='" + getNameTask() + '\'' +
                 ", description='" + getDescription() + '\'' +
@@ -32,33 +38,33 @@ public class Epic extends Task {
                 '}';
     }
 
-    protected void updateStatus(HashMap<Integer, Subtask> subtasks) {
+    public void updateStatus(HashMap<Integer, Subtask> subtasks) {
         if (subtaskIds.isEmpty()) {
-            super.setStatus(Status.NEW);
+            super.setStatus(NEW);
             return;
         }
+
         boolean subtaskDone = true;
         boolean subtaskProces = false;// в процесе выполнения
+
         for (Integer id : subtaskIds) {
             Subtask subtask = subtasks.get(id);
             if (subtask != null) {
-                if (subtask.getStatus() == Status.NEW) {
+                if (subtask.getStatus() == NEW) {
                     subtaskDone = false;
-                } else if (subtask.getStatus() == Status.IN_PROGRESS) {
+                } else if (subtask.getStatus() == IN_PROGRESS) {
                     subtaskDone = false;
                     subtaskProces = true;
                 }
             }
         }
+
         if (subtaskDone) {
-            setStatus(Status.DONE);
+            setStatus(DONE);
         } else if (subtaskProces) {
-            setStatus(Status.IN_PROGRESS);
+            setStatus(IN_PROGRESS);
         } else {
-            setStatus(Status.NEW);
+            setStatus(NEW);
         }
-
     }
-
-
 }

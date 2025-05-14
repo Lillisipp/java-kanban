@@ -1,7 +1,14 @@
+package ru.yandex.task.manager.managers.impl;
+
+import ru.yandex.task.manager.managers.HistoryManager;
+import ru.yandex.task.manager.model.Node;
+import ru.yandex.task.manager.model.Task;
+
 import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    private Map<Integer, Node> history = new HashMap<>();
+    private final Map<Integer, Node> history = new HashMap<>();
+
     private Node head;
     private Node tail;
 
@@ -32,8 +39,8 @@ public class InMemoryHistoryManager implements HistoryManager {
         List<Task> history = new ArrayList<>();
         Node current = head;
         while (current != null) {
-            history.add(current.task);
-            current = current.next;
+            history.add(current.getTask());
+            current = current.getNext();
         }
         return history;
     }
@@ -45,31 +52,24 @@ public class InMemoryHistoryManager implements HistoryManager {
         if (oldTail == null) {
             head = newNode;
         } else {
-            oldTail.next = newNode;
+            oldTail.setNext(newNode);
         }
         history.put(task.getId(), newNode);
     }
 
     public void removeNode(Node node) {
-        Node prev = node.prev;
-        Node next = node.next;
+        Node prev = node.getPrev();
+        Node next = node.getNext();
 
         if (prev != null) {
-            prev.next = next;
+            prev.setNext(next);
         } else {
             head = next;
         }
         if (next != null) {
-            next.prev = prev;
+            next.setPrev(prev);
         } else {
             tail = prev;
         }
-
     }
-
 }
-
-
-
-
-
