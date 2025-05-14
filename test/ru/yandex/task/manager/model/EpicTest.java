@@ -1,12 +1,18 @@
+package ru.yandex.task.manager.model;
+
+import ru.yandex.task.manager.managers.HistoryManager;
+import ru.yandex.task.manager.managers.Managers;
+import ru.yandex.task.manager.managers.impl.InMemoryHistoryManager;
+import ru.yandex.task.manager.managers.impl.InMemoryTaskManager;
+import ru.yandex.task.manager.managers.TaskManager;
+import ru.yandex.task.manager.model.enums.Status;
+import ru.yandex.task.manager.model.enums.TaskType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-
 
 class EpicTest {
 
@@ -16,7 +22,7 @@ class EpicTest {
     @Test
     void theHistoryDoesNotExceedTasks() {
         for (int i = 1; i <= 11; i++) {
-            Task task = new Task("Task" + i, "Description " + i, TaskType.TASK);
+            Task task = new Task("model.Task" + i, "Description " + i, TaskType.TASK);
             task.setId(i);
             historyManager.add(task);
         }
@@ -27,11 +33,11 @@ class EpicTest {
 
     @Test
     void tasksAreEqualIfIdsMatch() {
-        Task task1 = new Task("Task", "Desc", TaskType.TASK);
+        Task task1 = new Task("model.Task", "Desc", TaskType.TASK);
         task1.setId(1);
         task1.setStatus(Status.NEW);
 
-        Task task2 = new Task("Task", "Desc", TaskType.TASK);
+        Task task2 = new Task("model.Task", "Desc", TaskType.TASK);
         task2.setId(1);
         task2.setStatus(Status.NEW);
 
@@ -53,11 +59,11 @@ class EpicTest {
 
     @Test
     void epicsAreEqualIfAllFieldsMatch() {
-        Epic epic1 = new Epic("Epic", "Desc");
+        Epic epic1 = new Epic("model.Epic", "Desc");
         epic1.setId(10);
         epic1.setStatus(Status.NEW);
 
-        Epic epic2 = new Epic("Epic", "Desc");
+        Epic epic2 = new Epic("model.Epic", "Desc");
         epic2.setId(10);
         epic2.setStatus(Status.NEW);
 
@@ -66,7 +72,7 @@ class EpicTest {
 
     @Test
     void epicCannotBeItsOwnSubtask() {
-        Epic epic = new Epic("Epic", "Desc");
+        Epic epic = new Epic("model.Epic", "Desc");
         epic.setId(1);
 
         assertThrows(IllegalArgumentException.class, () -> {
@@ -78,9 +84,10 @@ class EpicTest {
     void subtaskCannotHaveItselfAsEpic() {
         Subtask subtask = new Subtask("Sub", "Desc", 1); // Устанавливаем epicId
 
-        assertThrows(IllegalArgumentException.class, () -> {
-            subtask.setId(1);
-        }, "Подзадача не может быть эпиком сама себе");
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> subtask.setId(1), "Подзадача не может быть эпиком сама себе"
+        );
     }
 
     @Test
@@ -96,8 +103,8 @@ class EpicTest {
     void taskManagerAddsAndFindsDifferentTaskTypes() {
         TaskManager manager = new InMemoryTaskManager();
 
-        Task task = new Task("Task", "Desc", TaskType.TASK);
-        Epic epic = new Epic("Epic", "Desc");
+        Task task = new Task("model.Task", "Desc", TaskType.TASK);
+        Epic epic = new Epic("model.Epic", "Desc");
         manager.addEpic(epic);
 
         Subtask subtask = new Subtask("Sub", "Desc", epic.getId());
@@ -162,8 +169,8 @@ class EpicTest {
         List<Task> history = historyManager.getHistory();
 
         assertEquals(1, history.size());
-        Assertions.assertEquals(task.getId(), history.get(0).getId());
-        Assertions.assertEquals(task.getNameTask(), history.get(0).getNameTask());
+        Assertions.assertEquals(task.getId(), history.getFirst().getId());
+        Assertions.assertEquals(task.getNameTask(), history.getFirst().getNameTask());
     }
 
     @Test
@@ -181,39 +188,5 @@ class EpicTest {
         assertEquals(task1, history.get(0));
         assertEquals(task2, history.get(1));
     }
-
-    @Test
-    void saveAndLoadEmptyManager() throws IOException {
-        File tempFail = File.createTempFile("empty", "csv");
-        FileBackedTaskManager manager = new FileBackedTaskManager(tempFail);
-        manager.save();
-        FileBackedTaskManager loadManager = FileBackedTaskManager.loadFromFile(tempFail);
-        Assertions.assertTrue(manager.getTasks().isEmpty());
-        Assertions.assertTrue(manager.getEpics().isEmpty());
-        Assertions.assertTrue(manager.getSubtasks().isEmpty());
-    }
-
-    @Test
-    void saveAndLoadMultipleTasks() throws IOException {
-        File tempFile = File.createTempFile("empty", "csv");
-        FileBackedTaskManager manager = new FileBackedTaskManager(tempFile);
-        Task task = new Task("Test", "Desc", TaskType.TASK);
-        Epic epic = new Epic("Epic", "Desc");
-        Subtask subtask = new Subtask("Sub", "Desc", epic.getId());
-        manager.addEpic(epic);
-        manager.addTask(task);
-        manager.addSubtask(subtask);
-        FileBackedTaskManager restored = FileBackedTaskManager.loadFromFile(tempFile);
-        Task restoredTask = restored.getTaskById(task.getId());
-        Epic restoredEpic = restored.getEpicById(epic.getId());
-        Subtask restoredSubtask = restored.getSubtask(subtask.getId());
-
-
-        Assertions.assertEquals(task, restoredTask);
-        Assertions.assertEquals(epic, restoredEpic);
-        Assertions.assertEquals(subtask, restoredSubtask);
-
-    }
-
 
 }

@@ -1,6 +1,9 @@
+package ru.yandex.task.manager.model;
+
+import ru.yandex.task.manager.model.enums.TaskType;
+
 public class Subtask extends Task {
     private int epicId;
-    //подзадачи эпика
 
     public Subtask(String nameTask, String description, int epicId) {
         super(nameTask, description, TaskType.SUBTASK);
@@ -13,7 +16,7 @@ public class Subtask extends Task {
 
     @Override
     public String toString() {
-        return "Subtask{" +
+        return "model.Subtask{" +
                 "epicId=" + epicId +
                 '}';
     }
@@ -25,5 +28,4 @@ public class Subtask extends Task {
         }
         super.setId(id);
     }
-
 }

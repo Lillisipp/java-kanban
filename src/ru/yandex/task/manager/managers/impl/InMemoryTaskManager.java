@@ -1,11 +1,21 @@
+package ru.yandex.task.manager.managers.impl;
+
+import ru.yandex.task.manager.managers.HistoryManager;
+import ru.yandex.task.manager.managers.Managers;
+import ru.yandex.task.manager.managers.TaskManager;
+import ru.yandex.task.manager.model.Epic;
+import ru.yandex.task.manager.model.Subtask;
+import ru.yandex.task.manager.model.Task;
+
 import java.util.HashMap;
 
 public class InMemoryTaskManager implements TaskManager {
-    private HashMap<Integer, Task> tasks = new HashMap<>();
-    private HashMap<Integer, Subtask> subtasks = new HashMap<>();
-    private HashMap<Integer, Epic> epics = new HashMap<>();
+    private final HashMap<Integer, Task> tasks = new HashMap<>();
+    private final HashMap<Integer, Subtask> subtasks = new HashMap<>();
+    private final HashMap<Integer, Epic> epics = new HashMap<>();
+    private final HistoryManager historyManager;
+
     private static int idCounter = 0;
-    private HistoryManager historyManager;
 
     public InMemoryTaskManager() {
         this.historyManager = Managers.getDefaultHistory();

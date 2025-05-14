@@ -1,36 +1,32 @@
+package ru.yandex.task.manager.managers.impl;
+
+import ru.yandex.task.manager.exception.ManagerSaveException;
+import ru.yandex.task.manager.managers.HistoryManager;
+import ru.yandex.task.manager.managers.Managers;
+import ru.yandex.task.manager.managers.TaskManager;
+import ru.yandex.task.manager.model.Epic;
+import ru.yandex.task.manager.model.Subtask;
+import ru.yandex.task.manager.model.Task;
+import ru.yandex.task.manager.model.enums.Status;
+import ru.yandex.task.manager.model.enums.TaskType;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class FileBackedTaskManager extends InMemoryTaskManager implements TaskManager {
-    private File file;
-    private HistoryManager historyManager;
+    private final File file;
+    private final HistoryManager historyManager;
 
     public FileBackedTaskManager(File file) {
         this.file = file;
-        this.historyManager = new HistoryManager() {
-            @Override
-            public void add(Task task) {
-
-            }
-
-            @Override
-            public void remove(int id) {
-
-            }
-
-            @Override
-            public List<Task> getHistory() {
-                return List.of();
-            }
-        };
-
+        this.historyManager = Managers.getDefaultHistory();
     }
 
     public static FileBackedTaskManager loadFromFile(File file) {
         FileBackedTaskManager manager = new FileBackedTaskManager(file);
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            reader.readLine();//скипаем первую строку
             String line;
             boolean isHistoryBlock = false;
             while ((line = reader.readLine()) != null) {
@@ -77,7 +73,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         return historyIds;
     }
 
-    private final String toString(Task task) {
+    private String toString(Task task) {
         StringBuilder sb = new StringBuilder();
         sb.append(task.getId()).append(",")
                 .append(task.getTaskType()).append(",")
@@ -128,6 +124,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
 
     public void save() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            writer.write("id,type,name,status,description,epic");
+            writer.newLine();
             for (Task task : getTasks().values()) {
                 writer.write(toString(task));
                 writer.newLine();

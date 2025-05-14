@@ -1,3 +1,8 @@
+package ru.yandex.task.manager.model;
+
+import ru.yandex.task.manager.model.enums.Status;
+import ru.yandex.task.manager.model.enums.TaskType;
+
 import java.util.Objects;
 
 public class Task {
@@ -68,7 +73,7 @@ public class Task {
 
     @Override
     public String toString() {
-        return "Task{" +
+        return "model.Task{" +
                 "nameTask='" + nameTask + '\'' +
                 ", description='" + description + '\'' +
                 ", id=" + id +
