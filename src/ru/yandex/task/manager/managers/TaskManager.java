@@ -1,3 +1,9 @@
+package ru.yandex.task.manager.managers;
+
+import ru.yandex.task.manager.model.Epic;
+import ru.yandex.task.manager.model.Subtask;
+import ru.yandex.task.manager.model.Task;
+
 public interface TaskManager {
     int generatorID();
 
@@ -30,6 +36,4 @@ public interface TaskManager {
     void updateSubtask(Subtask update);
 
     void updateEpic(Epic update);
-
-
 }

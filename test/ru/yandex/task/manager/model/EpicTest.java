@@ -1,10 +1,18 @@
+package ru.yandex.task.manager.model;
+
+import ru.yandex.task.manager.managers.HistoryManager;
+import ru.yandex.task.manager.managers.Managers;
+import ru.yandex.task.manager.managers.impl.InMemoryHistoryManager;
+import ru.yandex.task.manager.managers.impl.InMemoryTaskManager;
+import ru.yandex.task.manager.managers.TaskManager;
+import ru.yandex.task.manager.model.enums.Status;
+import ru.yandex.task.manager.model.enums.TaskType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-
 
 class EpicTest {
 
@@ -14,7 +22,7 @@ class EpicTest {
     @Test
     void theHistoryDoesNotExceedTasks() {
         for (int i = 1; i <= 11; i++) {
-            Task task = new Task("Task" + i, "Description " + i);
+            Task task = new Task("model.Task" + i, "Description " + i, TaskType.TASK);
             task.setId(i);
             historyManager.add(task);
         }
@@ -25,11 +33,11 @@ class EpicTest {
 
     @Test
     void tasksAreEqualIfIdsMatch() {
-        Task task1 = new Task("Task", "Desc");
+        Task task1 = new Task("model.Task", "Desc", TaskType.TASK);
         task1.setId(1);
         task1.setStatus(Status.NEW);
 
-        Task task2 = new Task("Task", "Desc");
+        Task task2 = new Task("model.Task", "Desc", TaskType.TASK);
         task2.setId(1);
         task2.setStatus(Status.NEW);
 
@@ -51,11 +59,11 @@ class EpicTest {
 
     @Test
     void epicsAreEqualIfAllFieldsMatch() {
-        Epic epic1 = new Epic("Epic", "Desc");
+        Epic epic1 = new Epic("model.Epic", "Desc");
         epic1.setId(10);
         epic1.setStatus(Status.NEW);
 
-        Epic epic2 = new Epic("Epic", "Desc");
+        Epic epic2 = new Epic("model.Epic", "Desc");
         epic2.setId(10);
         epic2.setStatus(Status.NEW);
 
@@ -64,7 +72,7 @@ class EpicTest {
 
     @Test
     void epicCannotBeItsOwnSubtask() {
-        Epic epic = new Epic("Epic", "Desc");
+        Epic epic = new Epic("model.Epic", "Desc");
         epic.setId(1);
 
         assertThrows(IllegalArgumentException.class, () -> {
@@ -76,9 +84,10 @@ class EpicTest {
     void subtaskCannotHaveItselfAsEpic() {
         Subtask subtask = new Subtask("Sub", "Desc", 1); // Устанавливаем epicId
 
-        assertThrows(IllegalArgumentException.class, () -> {
-            subtask.setId(1);
-        }, "Подзадача не может быть эпиком сама себе");
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> subtask.setId(1), "Подзадача не может быть эпиком сама себе"
+        );
     }
 
     @Test
@@ -94,8 +103,8 @@ class EpicTest {
     void taskManagerAddsAndFindsDifferentTaskTypes() {
         TaskManager manager = new InMemoryTaskManager();
 
-        Task task = new Task("Task", "Desc");
-        Epic epic = new Epic("Epic", "Desc");
+        Task task = new Task("model.Task", "Desc", TaskType.TASK);
+        Epic epic = new Epic("model.Epic", "Desc");
         manager.addEpic(epic);
 
         Subtask subtask = new Subtask("Sub", "Desc", epic.getId());
@@ -111,11 +120,11 @@ class EpicTest {
     void tasksWithGivenAndGeneratedIdsDoNotConflict() {
         TaskManager manager = new InMemoryTaskManager();
 
-        Task task1 = new Task("Task1", "Desc");
+        Task task1 = new Task("Task1", "Desc", TaskType.TASK);
         task1.setId(100);
         manager.addTask(task1);
 
-        Task task2 = new Task("Task2", "Desc");
+        Task task2 = new Task("Task2", "Desc", TaskType.TASK);
         task2.setId(manager.generatorID());
         manager.addTask(task2);
 
@@ -125,7 +134,7 @@ class EpicTest {
 
     @Test
     void addNewTask() {
-        Task task = new Task("Test addNewTask", "Test addNewTask description");
+        Task task = new Task("Test addNewTask", "Test addNewTask description", TaskType.TASK);
 
         taskManager.addTask(task);
 
@@ -138,7 +147,7 @@ class EpicTest {
     @Test
     void taskRemainsUnchangedAfterAddingToManager() {
         TaskManager manager = new InMemoryTaskManager();
-        Task task = new Task("Test", "Desc");
+        Task task = new Task("Test", "Desc", TaskType.TASK);
 
         manager.addTask(task);  // ID будет установлен внутри метода addTask
 
@@ -153,24 +162,24 @@ class EpicTest {
 
     @Test
     void historyManagerPreservesOriginalTaskData() {
-        Task task = new Task("HistoryTest", "Desc");
+        Task task = new Task("HistoryTest", "Desc", TaskType.TASK);
         task.setId(42);
 
         historyManager.add(task);
         List<Task> history = historyManager.getHistory();
 
         assertEquals(1, history.size());
-        Assertions.assertEquals(task.getId(), history.get(0).getId());
-        Assertions.assertEquals(task.getNameTask(), history.get(0).getNameTask());
+        Assertions.assertEquals(task.getId(), history.getFirst().getId());
+        Assertions.assertEquals(task.getNameTask(), history.getFirst().getNameTask());
     }
 
     @Test
     void addTask_AddsTaskToEndOfHistory() {
-        Task task1 = new Task("Task1", "Desc");
+        Task task1 = new Task("Task1", "Desc", TaskType.TASK);
         task1.setId(1);
         historyManager.add(task1);
 
-        Task task2 = new Task("Task2", "Desc");
+        Task task2 = new Task("Task2", "Desc", TaskType.TASK);
         task2.setId(2);
         historyManager.add(task2);
 
@@ -179,4 +188,5 @@ class EpicTest {
         assertEquals(task1, history.get(0));
         assertEquals(task2, history.get(1));
     }
+
 }
