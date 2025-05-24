@@ -3,20 +3,51 @@ package ru.yandex.task.manager.model;
 import ru.yandex.task.manager.model.enums.Status;
 import ru.yandex.task.manager.model.enums.TaskType;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
-public class Task {
+import static java.util.Objects.*;
+
+public class Task implements Comparable<Task> {
     private String nameTask;
     private String description;
     private int id;
     private Status status;
     private TaskType taskType;
+    private Duration duration; // Продолжительность задачи
+    private LocalDateTime startTime;
 
-    public Task(String nameTask, String description, TaskType taskType) {
+    public Task(String nameTask, String description, TaskType taskType, Duration duration, LocalDateTime startTime) {
         this.nameTask = nameTask;
         this.description = description;
-        this.status = Status.NEW;//по умолчанию задача новая
+        this.status = Status.NEW;
         this.taskType = taskType;
+        this.duration = duration;
+        this.startTime = startTime;
+    }
+
+    public LocalDateTime getEndTime() {
+        if (isNull(startTime) || isNull(duration)) {
+            throw new NullPointerException("startTime and duration can't be null");
+        }
+        return startTime.plus(duration);
+    }
+
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
     }
 
     public String getNameTask() {
@@ -68,7 +99,7 @@ public class Task {
 
     @Override
     public int hashCode() {
-        return Objects.hash(nameTask, description, id, status);
+        return hash(nameTask, description, id, status);
     }
 
     @Override
@@ -79,5 +110,13 @@ public class Task {
                 ", id=" + id +
                 ", status=" + status +
                 '}';
+    }
+
+    @Override
+    public int compareTo(Task task) {
+               if (this.startTime.isBefore(task.startTime) ? -1 ){
+                   return -1;
+               }
+        return;
     }
 }

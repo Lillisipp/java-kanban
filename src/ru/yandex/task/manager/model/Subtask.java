@@ -2,11 +2,20 @@ package ru.yandex.task.manager.model;
 
 import ru.yandex.task.manager.model.enums.TaskType;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 public class Subtask extends Task {
     private int epicId;
 
-    public Subtask(String nameTask, String description, int epicId) {
-        super(nameTask, description, TaskType.SUBTASK);
+    public Subtask(
+            String nameTask,
+            String description,
+            int epicId,
+            Duration duration,
+            LocalDateTime startTime
+    ) {
+        super(nameTask, description, TaskType.SUBTASK,duration,startTime );
         this.epicId = epicId;
     }
 

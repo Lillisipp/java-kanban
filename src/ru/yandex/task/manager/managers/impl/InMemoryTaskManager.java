@@ -8,12 +8,20 @@ import ru.yandex.task.manager.model.Subtask;
 import ru.yandex.task.manager.model.Task;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.TreeSet;
 
 public class InMemoryTaskManager implements TaskManager {
     private final HashMap<Integer, Task> tasks = new HashMap<>();
     private final HashMap<Integer, Subtask> subtasks = new HashMap<>();
     private final HashMap<Integer, Epic> epics = new HashMap<>();
     private final HistoryManager historyManager;
+    private final TreeSet<Task> prioritizedTasks=new TreeSet<>();
+
+    @Override
+    public List<Task> getPrioritizedTasks() {
+        return prioritizedTasks.stream().toList();
+    }
 
     private static int idCounter = 0;
 
