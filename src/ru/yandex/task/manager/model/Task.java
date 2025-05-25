@@ -114,9 +114,19 @@ public class Task implements Comparable<Task> {
 
     @Override
     public int compareTo(Task task) {
-               if (this.startTime.isBefore(task.startTime) ? -1 ){
-                   return -1;
-               }
-        return;
+        if (task == null) {
+            throw new NullPointerException("Compared task cannot be null");
+        }
+
+        if (this.startTime == null && task.startTime == null) {
+            return 0;
+        }
+        if (this.startTime == null) {
+            return 1;
+        }
+        if (task.startTime == null) {
+            return -1;
+        }
+        return this.startTime.compareTo(task.startTime);
     }
 }

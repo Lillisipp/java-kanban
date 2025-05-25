@@ -12,6 +12,7 @@ import static ru.yandex.task.manager.model.enums.Status.*;
 public class Epic extends Task {
     private List<Integer> subtaskIds;
     private LocalDateTime endTime;
+    private List<Subtask> subtasks;
 
     public Epic(String nameTask, String description) {
         super(nameTask, description, TaskType.EPIC,null,null);
