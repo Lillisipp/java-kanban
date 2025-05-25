@@ -129,4 +129,16 @@ public class Task implements Comparable<Task> {
         }
         return this.startTime.compareTo(task.startTime);
     }
+    public boolean hasOverlaps(Task newTask) {
+        return prioritizedTasks.stream()
+                .filter(task -> task.getStartTime() != null && task.getEndTime() != null)
+                .anyMatch(existingTask -> {
+                    LocalDateTime newStart = newTask.getStartTime();
+                    LocalDateTime newEnd = newTask.getEndTime();
+                    LocalDateTime existingStart = existingTask.getStartTime();
+                    LocalDateTime existingEnd = existingTask.getEndTime();
+                    return !(newEnd.isBefore(existingStart) || newStart.isAfter(existingEnd));
+                });
+    }
+
 }
