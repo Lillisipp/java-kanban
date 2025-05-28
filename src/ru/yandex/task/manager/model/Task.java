@@ -7,7 +7,8 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-import static java.util.Objects.*;
+import static java.util.Objects.hash;
+import static java.util.Objects.isNull;
 
 public class Task implements Comparable<Task> {
     private String nameTask;
@@ -48,6 +49,14 @@ public class Task implements Comparable<Task> {
 
     public void setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
+    }
+
+    public static boolean lappingTask(Task task1, Task task2) {
+        if (task1.getStartTime() == null || task1.getEndTime() == null ||
+                task2.getStartTime() == null || task2.getEndTime() == null) {
+            return false;
+        }
+        return !(task1.getStartTime().isBefore(task2.getStartTime()) || task1.getEndTime().isAfter(task2.getEndTime()));
     }
 
     public String getNameTask() {
@@ -129,16 +138,6 @@ public class Task implements Comparable<Task> {
         }
         return this.startTime.compareTo(task.startTime);
     }
-    public boolean hasOverlaps(Task newTask) {
-        return prioritizedTasks.stream()
-                .filter(task -> task.getStartTime() != null && task.getEndTime() != null)
-                .anyMatch(existingTask -> {
-                    LocalDateTime newStart = newTask.getStartTime();
-                    LocalDateTime newEnd = newTask.getEndTime();
-                    LocalDateTime existingStart = existingTask.getStartTime();
-                    LocalDateTime existingEnd = existingTask.getEndTime();
-                    return !(newEnd.isBefore(existingStart) || newStart.isAfter(existingEnd));
-                });
-    }
+
 
 }

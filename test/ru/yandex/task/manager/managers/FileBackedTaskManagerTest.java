@@ -11,6 +11,8 @@ import ru.yandex.task.manager.model.enums.TaskType;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 public class FileBackedTaskManagerTest {
 
@@ -21,9 +23,17 @@ public class FileBackedTaskManagerTest {
     void saveAndLoadMultipleTasks() throws IOException {
         File tempFile = File.createTempFile("empty", "csv");
         FileBackedTaskManager manager = new FileBackedTaskManager(tempFile);
-        Task task = new Task("Test", "Desc", TaskType.TASK);
+
+        LocalDateTime now = LocalDateTime.of(2025, 5, 29, 10, 0);
+        Task task = new Task("Test", "Desc", TaskType.TASK,
+                Duration.ofMinutes(30), LocalDateTime.now());
+
         Epic epic = new Epic("model.Epic", "Desc");
-        Subtask subtask = new Subtask("Sub", "Desc", epic.getId());
+        epic.setId(100);
+
+        Subtask subtask = new Subtask("Sub", "Desc", epic.getId(),
+                Duration.ofMinutes(45), LocalDateTime.now().plusHours(1));
+
         manager.addEpic(epic);
         manager.addTask(task);
         manager.addSubtask(subtask);

@@ -40,4 +40,6 @@ public interface TaskManager {
     void updateEpic(Epic update);
 
     List<Task> getPrioritizedTasks();
+
+    public boolean hasOverlaps(Task newTask);
 }

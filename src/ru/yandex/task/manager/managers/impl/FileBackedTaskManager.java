@@ -11,6 +11,8 @@ import ru.yandex.task.manager.model.enums.Status;
 import ru.yandex.task.manager.model.enums.TaskType;
 
 import java.io.*;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +28,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
     public static FileBackedTaskManager loadFromFile(File file) {
         FileBackedTaskManager manager = new FileBackedTaskManager(file);
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            reader.readLine();//скипаем первую строку
+            reader.readLine();
             String line;
             boolean isHistoryBlock = false;
             while ((line = reader.readLine()) != null) {
@@ -59,10 +61,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка загрузки данных из файла: " + e.getMessage(), e);
         }
-
         return manager;
     }
-
 
     private static List<Integer> historyFromString(String value) {
         List<Integer> historyIds = new ArrayList<>();
@@ -79,7 +79,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                 .append(task.getTaskType()).append(",")
                 .append(task.getNameTask()).append(",")
                 .append(task.getStatus()).append(",")
-                .append(task.getDescription());
+                .append(task.getDescription()).append(",")
+                .append(task.getStartTime() != null ? task.getStartTime() : "null").append(",")
+                .append(task.getDuration() != null ? task.getDuration().toMinutes() : "null");
 
         if (task instanceof Subtask) {
             sb.append(",").append(((Subtask) task).getEpicId());
@@ -95,12 +97,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         TaskType type = TaskType.valueOf(parts[1]);
         String name = parts[2];
         Status status = Status.valueOf(parts[3]);
-
         String description = parts[4];
+        Duration duration = !"null".equals(parts[6]) ? Duration.ofMinutes(Long.parseLong(parts[6])) : null;
+        LocalDateTime startTime = !"null".equals(parts[5]) ? LocalDateTime.parse(parts[5]) : null;
+
 
         switch (type) {
             case TASK -> {
-                Task task = new Task(name, description, TaskType.TASK);
+                Task task = new Task(name, description, TaskType.TASK, duration, startTime);
                 task.setId(id);
                 task.setStatus(status);
                 return task;
@@ -112,8 +116,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                 return epic;
             }
             case SUBTASK -> {
-                int epicId = Integer.parseInt(parts[5]);
-                Subtask subtask = new Subtask(name, description, epicId);
+                int epicId = Integer.parseInt(parts[7]);
+                Subtask subtask = new Subtask(name, description, epicId, duration, startTime);
                 subtask.setId(id);
                 subtask.setStatus(status);
                 return subtask;
@@ -124,7 +128,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
 
     public void save() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-            writer.write("id,type,name,status,description,epic");
+            writer.write("id,type,name,status,description,startTime,duration,epic");
             writer.newLine();
             for (Task task : getTasks().values()) {
                 writer.write(toString(task));

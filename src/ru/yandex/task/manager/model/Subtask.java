@@ -6,16 +6,15 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 
 public class Subtask extends Task {
-    private int epicId;
+    private final int epicId;
 
     public Subtask(
             String nameTask,
             String description,
             int epicId,
             Duration duration,
-            LocalDateTime startTime
-    ) {
-        super(nameTask, description, TaskType.SUBTASK,duration,startTime );
+            LocalDateTime startTime) {
+        super(nameTask, description, TaskType.SUBTASK, duration, startTime);
         this.epicId = epicId;
     }
 

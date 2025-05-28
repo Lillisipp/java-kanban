@@ -2,20 +2,22 @@ package ru.yandex.task.manager.model;
 
 import ru.yandex.task.manager.model.enums.TaskType;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import static ru.yandex.task.manager.model.enums.Status.*;
 
 public class Epic extends Task {
     private List<Integer> subtaskIds;
-    private LocalDateTime endTime;
     private List<Subtask> subtasks;
+    private Duration duration;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
+
 
     public Epic(String nameTask, String description) {
-        super(nameTask, description, TaskType.EPIC,null,null);
+        super(nameTask, description, TaskType.EPIC, null, null);
         this.subtaskIds = new ArrayList<>();
     }
 
@@ -48,7 +50,7 @@ public class Epic extends Task {
         }
 
         boolean subtaskDone = true;
-        boolean subtaskProces = false;// в процесе выполнения
+        boolean subtaskProces = false;
 
         for (Integer id : subtaskIds) {
             Subtask subtask = subtasks.get(id);
@@ -69,5 +71,55 @@ public class Epic extends Task {
         } else {
             setStatus(NEW);
         }
+    }
+
+    public void updateTimeEpic(Map<Integer, Subtask> subtasks) {
+        List<Subtask> subtaskList = subtaskIds.stream()
+                .map(subtasks::get)
+                .filter(Objects::nonNull)
+                .toList();
+
+        Duration allDuration = subtaskList.stream()
+                .map(Subtask::getDuration)
+                .filter(Objects::nonNull)
+                .reduce(Duration.ZERO, Duration::plus);
+
+        LocalDateTime start = subtaskList.stream()
+                .map(Subtask::getStartTime)
+                .filter(Objects::nonNull)
+                .min(LocalDateTime::compareTo)
+                .orElse(null);
+
+        LocalDateTime end = subtaskList.stream()
+                .map(sub -> {
+                    try {
+                        return sub.getEndTime();
+                    } catch (NullPointerException e) {
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .max(LocalDateTime::compareTo)
+                .orElse(null);
+
+        this.duration = allDuration.isZero() ? null : allDuration;
+        this.startTime = start;
+        this.endTime = end;
+
+    }
+
+    @Override
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+
+    @Override
+    public Duration getDuration() {
+        return duration;
+    }
+
+    @Override
+    public LocalDateTime getStartTime() {
+        return startTime;
     }
 }
