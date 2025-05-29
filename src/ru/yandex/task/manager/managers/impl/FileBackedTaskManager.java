@@ -3,7 +3,6 @@ package ru.yandex.task.manager.managers.impl;
 import ru.yandex.task.manager.exception.ManagerSaveException;
 import ru.yandex.task.manager.managers.HistoryManager;
 import ru.yandex.task.manager.managers.Managers;
-import ru.yandex.task.manager.managers.TaskManager;
 import ru.yandex.task.manager.model.Epic;
 import ru.yandex.task.manager.model.Subtask;
 import ru.yandex.task.manager.model.Task;
@@ -16,7 +15,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FileBackedTaskManager extends InMemoryTaskManager implements TaskManager {
+public class FileBackedTaskManager extends InMemoryTaskManager { //implements TaskManager {
     private final File file;
     private final HistoryManager historyManager;
 

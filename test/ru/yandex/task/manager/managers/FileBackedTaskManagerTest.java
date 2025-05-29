@@ -14,7 +14,12 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
-public class FileBackedTaskManagerTest {
+public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
+
+    @Override
+    public FileBackedTaskManager createManager() {
+        return null;
+    }
 
     @TempDir
     File tempDir;
@@ -59,4 +64,5 @@ public class FileBackedTaskManagerTest {
         Assertions.assertTrue(manager.getEpics().isEmpty());
         Assertions.assertTrue(manager.getSubtasks().isEmpty());
     }
+
 }
