@@ -1,6 +1,9 @@
 package ru.yandex.task.manager.managers;
 
 import org.junit.jupiter.api.BeforeEach;
+import ru.yandex.task.manager.model.Task;
+
+import java.util.List;
 
 public abstract class TaskManagerTest<T extends TaskManager> {
 
@@ -12,6 +15,8 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     void setup() {
         manager = createManager();
     }
+
+    List<Task> getHistory();
 
 
 }
