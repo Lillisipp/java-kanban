@@ -8,14 +8,28 @@ import ru.yandex.task.manager.model.Subtask;
 import ru.yandex.task.manager.model.Task;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.TreeSet;
 
 public class InMemoryTaskManager implements TaskManager {
     private final HashMap<Integer, Task> tasks = new HashMap<>();
     private final HashMap<Integer, Subtask> subtasks = new HashMap<>();
     private final HashMap<Integer, Epic> epics = new HashMap<>();
     private final HistoryManager historyManager;
-
+    private final TreeSet<Task> prioritizedTasks = new TreeSet<>();
     private static int idCounter = 0;
+
+
+    @Override
+    public List<Task> getPrioritizedTasks() {
+        return prioritizedTasks.stream().toList();
+    }
+
+    public boolean hasOverlaps(Task newTask) {
+        return prioritizedTasks.stream()
+                .filter(existingTask -> existingTask.getStartTime() != null && existingTask.getEndTime() != null)
+                .anyMatch(existingTask -> Task.lappingTask(existingTask, newTask));
+    }
 
     public InMemoryTaskManager() {
         this.historyManager = Managers.getDefaultHistory();
@@ -81,43 +95,71 @@ public class InMemoryTaskManager implements TaskManager {
     public void addSubtask(Subtask subtask) {
         subtask.setId(generatorID()); // Назначаем подзадаче уникальный ID
         subtasks.put(subtask.getId(), subtask);
+        if (subtask != null) {
+            prioritizedTasks.add(subtask);
+
+            Epic epic = epics.get(subtask.getEpicId());
+            if (epic != null) {
+                epic.addSubtask(subtask.getId());
+                epic.updateStatus(subtasks);
+                epic.updateTimeEpic(subtasks);
+            }
+        }
     }
 
     @Override
     public void addTask(Task task) {
-        task.setId(generatorID()); // Назначаем подзадаче уникальный ID
         tasks.put(task.getId(), task);
+        prioritizedTasks.add(task);
+        if (task.getStartTime() != null) {
+            task.setId(generatorID()); // Назначаем подзадаче уникальный ID
+        }
     }
 
     @Override
     public void addEpic(Epic epic) {
         epic.setId(generatorID()); // Назначаем подзадаче уникальный ID
         epics.put(epic.getId(), epic);
+
     }
 
     @Override
-    public void updateTask(Task update) { //принимаем новую задачу
-        Task updats = tasks.get(update.getId());
-        if (updats != null) {
-            tasks.put(updats.getId(), update);
+    public void updateTask(Task update) {
+        Task old = tasks.get(update.getId());
+        if (old != null) {
+            prioritizedTasks.remove(old);
+            tasks.put(update.getId(), update);
+            if (update.getStartTime() != null) {
+                prioritizedTasks.add(update);
+            }
         }
     }
 
     public void updateSubtask(Subtask update) {
-        Subtask updats = subtasks.get(update.getId());
-        if (updats != null) {
-            subtasks.put(updats.getId(), update);
-            Epic epic = epics.get(update.getId());
-            if (epic != null) {
-                epic.updateStatus(subtasks);
+        Subtask old = subtasks.get(update.getId());
+        if (old != null) {
+            prioritizedTasks.remove(old);
+            subtasks.put(update.getId(), update);
+            if (update.getStartTime() != null) {
+                prioritizedTasks.add(update);
+
+                Epic epic = epics.get(update.getEpicId());
+                if (epic != null) {
+                    epic.updateStatus(subtasks);
+                    epic.updateTimeEpic(subtasks);
+                }
             }
         }
     }
 
     public void updateEpic(Epic update) {
-        Epic updats = epics.get(update.getId());
-        if (updats != null) {
-            epics.put(updats.getId(), update);
+        Epic old = epics.get(update.getId());
+        if (old != null) {
+            prioritizedTasks.remove(old);
+            epics.put(update.getId(), update);
+            if (update.getStartTime() != null) {
+                prioritizedTasks.add(update);
+            }
         }
     }
 
