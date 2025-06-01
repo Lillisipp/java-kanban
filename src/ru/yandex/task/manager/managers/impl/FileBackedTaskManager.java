@@ -15,13 +15,12 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FileBackedTaskManager extends InMemoryTaskManager { //implements TaskManager {
+public class FileBackedTaskManager extends InMemoryTaskManager {
     private final File file;
-    private final HistoryManager historyManager;
 
     public FileBackedTaskManager(File file) {
+        super();
         this.file = file;
-        this.historyManager = Managers.getDefaultHistory();
     }
 
     public static FileBackedTaskManager loadFromFile(File file) {

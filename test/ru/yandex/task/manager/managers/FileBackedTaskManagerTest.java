@@ -1,6 +1,8 @@
 package ru.yandex.task.manager.managers;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import ru.yandex.task.manager.managers.impl.FileBackedTaskManager;
@@ -16,13 +18,13 @@ import java.time.LocalDateTime;
 
 public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
 
-    @Override
-    public FileBackedTaskManager createManager() {
-        return null;
-    }
-
     @TempDir
-    File tempDir;
+    private File tempDir;
+
+    @BeforeEach
+     void init() {
+        initManager(new FileBackedTaskManager(tempDir));
+    }
 
     @Test
     void saveAndLoadMultipleTasks() throws IOException {
@@ -64,5 +66,4 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
         Assertions.assertTrue(manager.getEpics().isEmpty());
         Assertions.assertTrue(manager.getSubtasks().isEmpty());
     }
-
 }
