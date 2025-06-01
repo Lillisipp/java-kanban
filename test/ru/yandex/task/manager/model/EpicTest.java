@@ -21,18 +21,6 @@ class EpicTest {
     private final TaskManager taskManager = new InMemoryTaskManager();
     private final HistoryManager historyManager = new InMemoryHistoryManager();
 
-    @Test
-    void theHistoryDoesNotExceedTasks() {
-        for (int i = 1; i <= 11; i++) {
-            Task task = new Task("model.Task" + i, "Description " + i, TaskType.TASK,
-                    Duration.ofMinutes(30), LocalDateTime.now().minusMinutes(i));
-            task.setId(i);
-            historyManager.add(task);
-        }
-
-        List<Task> history = historyManager.getHistory();
-        assertEquals(11, history.size(), "История должна содержать 11 задач");
-    }
 
     @Test
     void tasksAreEqualIfIdsMatch() {

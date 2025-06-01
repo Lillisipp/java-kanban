@@ -1,23 +1,16 @@
 package ru.yandex.task.manager.managers;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.yandex.task.manager.managers.impl.FileBackedTaskManager;
 import ru.yandex.task.manager.model.Epic;
 import ru.yandex.task.manager.model.Subtask;
 import ru.yandex.task.manager.model.Task;
 import ru.yandex.task.manager.model.enums.Status;
 import ru.yandex.task.manager.model.enums.TaskType;
 
-import java.io.File;
-import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public abstract class TaskManagerTest<T extends TaskManager> {
 
@@ -25,47 +18,6 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     protected void initManager(T manager) {
         this.manager = manager;
-    }
-
-    @Test
-    void saveAndLoadMultipleTasks() throws IOException {
-        File tempFile = File.createTempFile("empty", "csv");
-        FileBackedTaskManager manager = new FileBackedTaskManager(tempFile);
-
-        LocalDateTime now = LocalDateTime.of(2025, 5, 29, 10, 0);
-        Task task = new Task("Test", "Desc", TaskType.TASK,
-                Duration.ofMinutes(30), LocalDateTime.now());
-
-        Epic epic = new Epic("model.Epic", "Desc");
-        epic.setId(100);
-
-        Subtask subtask = new Subtask("Sub", "Desc", epic.getId(),
-                Duration.ofMinutes(45), LocalDateTime.now().plusHours(1));
-
-        manager.addEpic(epic);
-        manager.addTask(task);
-        manager.addSubtask(subtask);
-        FileBackedTaskManager restored = FileBackedTaskManager.loadFromFile(tempFile);
-        Task restoredTask = restored.getTaskById(task.getId());
-        Epic restoredEpic = restored.getEpicById(epic.getId());
-        Subtask restoredSubtask = restored.getSubtask(subtask.getId());
-
-
-        Assertions.assertEquals(task, restoredTask);
-        Assertions.assertEquals(epic, restoredEpic);
-        Assertions.assertEquals(subtask, restoredSubtask);
-
-    }
-
-    @Test
-    void saveAndLoadEmptyManager() throws IOException {
-        File tempFail = File.createTempFile("empty", "csv");
-        FileBackedTaskManager manager = new FileBackedTaskManager(tempFail);
-        manager.save();
-        FileBackedTaskManager.loadFromFile(tempFail);
-        Assertions.assertTrue(manager.getTasks().isEmpty());
-        Assertions.assertTrue(manager.getEpics().isEmpty());
-        Assertions.assertTrue(manager.getSubtasks().isEmpty());
     }
 
     @Test

@@ -56,8 +56,17 @@ public class Task implements Comparable<Task> {
                 task2.getStartTime() == null || task2.getEndTime() == null) {
             return false;
         }
-        return !(task1.getStartTime().isBefore(task2.getStartTime()) || task1.getEndTime().isAfter(task2.getEndTime()));
+        return !(task1.getEndTime().isBefore(task2.getStartTime()) ||
+                task2.getEndTime().isBefore(task1.getStartTime()));
     }
+//    public static boolean lappingTask(Task task1, Task task2) {
+//        if (task1.getStartTime() == null || task1.getEndTime() == null ||
+//                task2.getStartTime() == null || task2.getEndTime() == null) {
+//            return false;
+//        }
+//        return !(task1.getStartTime().isBefore(task2.getStartTime()) ||
+//        task1.getEndTime().isAfter(task2.getEndTime()));
+//    }
 
     public String getNameTask() {
         return nameTask;

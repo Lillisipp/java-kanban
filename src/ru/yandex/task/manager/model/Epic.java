@@ -10,7 +10,6 @@ import static ru.yandex.task.manager.model.enums.Status.*;
 
 public class Epic extends Task {
     private List<Integer> subtaskIds;
-    private List<Subtask> subtasks;
     private Duration duration;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
@@ -49,27 +48,12 @@ public class Epic extends Task {
             return;
         }
 
-        boolean subtaskDone = true;
-        boolean subtaskProces = false;
-
-        for (Integer id : subtaskIds) {
-            Subtask subtask = subtasks.get(id);
-            if (subtask != null) {
-                if (subtask.getStatus() == NEW) {
-                    subtaskDone = false;
-                } else if (subtask.getStatus() == IN_PROGRESS) {
-                    subtaskDone = false;
-                    subtaskProces = true;
-                }
-            }
-        }
-
-        if (subtaskDone) {
-            setStatus(DONE);
-        } else if (subtaskProces) {
-            setStatus(IN_PROGRESS);
-        } else {
+        if (subtasks.values().stream().allMatch(subtask -> subtask.getStatus() == NEW)) {
             setStatus(NEW);
+        } else if (subtasks.values().stream().allMatch(subtask -> subtask.getStatus() == DONE)) {
+            setStatus(DONE);
+        } else {
+            setStatus(IN_PROGRESS);
         }
     }
 

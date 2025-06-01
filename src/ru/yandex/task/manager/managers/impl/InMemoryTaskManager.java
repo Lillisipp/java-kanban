@@ -95,13 +95,16 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void addTask(Task task) {
-        if (task == null || task.getStartTime() == null) {
+        if (task == null) {
             return;
         }
-        if (hasOverlaps(task)) {
+        if (task.getStartTime() == null) {
             return;
         }
         task.setId(generatorID());
+        if (hasOverlaps(task)) {
+            return;
+        }
         tasks.put(task.getId(), task);
         prioritizedTasks.add(task);
     }
@@ -114,12 +117,13 @@ public class InMemoryTaskManager implements TaskManager {
         if (subtask.getStartTime() == null) {
             return;
         }
-        if (hasOverlaps(subtask)) {
-            return;
-        }
+
         subtask.setId(generatorID()); // Назначаем подзадаче уникальный ID
+
         subtasks.put(subtask.getId(), subtask);
-        prioritizedTasks.add(subtask);
+        if (!hasOverlaps(subtask)) {
+            prioritizedTasks.add(subtask);
+        }
 
         Epic epic = epics.get(subtask.getEpicId());
         if (epic != null) {
@@ -131,13 +135,11 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void addEpic(Epic epic) {
-        if (epic.getStartTime() == null) {
+        if (epic == null) {
             return;
         }
-        if (epic != null) {
-            epic.setId(generatorID());
-            epics.put(epic.getId(), epic);
-        }
+        epic.setId(generatorID());
+        epics.put(epic.getId(), epic);
     }
 
     @Override

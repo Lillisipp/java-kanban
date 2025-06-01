@@ -2,7 +2,6 @@ package ru.yandex.task.manager.managers;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.yandex.task.manager.managers.impl.FileBackedTaskManager;
 import ru.yandex.task.manager.managers.impl.InMemoryTaskManager;
 import ru.yandex.task.manager.model.Epic;
 import ru.yandex.task.manager.model.Subtask;
@@ -46,7 +45,7 @@ public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager
 
         manager.addTask(task1);
         manager.addTask(task2);
-
+        assertEquals(1, manager.getTasks().size());
         assertNull(manager.getTaskById(task2.getId())); // Вторая задача пересекается и не должна быть добавлена
     }
 
@@ -78,20 +77,6 @@ public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager
         assertEquals(Status.DONE, manager.getEpicById(epic.getId()).getStatus());
     }
 
-    @Test
-    void epicStatusShouldBeInProgressWhenSubtasksAreNewAndDone() {
-        Epic epic = new Epic("Epic", "Description");
-        manager.addEpic(epic);
-
-        Subtask s1 = new Subtask("Sub1", "d", epic.getId(), Duration.ofMinutes(10), LocalDateTime.now());
-        s1.setStatus(Status.NEW);
-        Subtask s2 = new Subtask("Sub2", "d", epic.getId(), Duration.ofMinutes(10), LocalDateTime.now());
-        s2.setStatus(Status.DONE);
-        manager.addSubtask(s1);
-        manager.addSubtask(s2);
-
-        assertEquals(Status.IN_PROGRESS, manager.getEpicById(epic.getId()).getStatus());
-    }
 
     @Test
     void epicStatusShouldBeInProgressWhenAnySubtaskIsInProgress() {

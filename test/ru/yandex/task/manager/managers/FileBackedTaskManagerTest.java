@@ -1,7 +1,6 @@
 package ru.yandex.task.manager.managers;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -21,17 +20,16 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
     @TempDir
     private File tempDir;
 
+    private File tempFile;
+
     @BeforeEach
-     void init() {
-        initManager(new FileBackedTaskManager(tempDir));
+    void init() {
+        tempFile = new File(tempDir, "test.csv");
+        initManager(new FileBackedTaskManager(tempFile));
     }
 
     @Test
-    void saveAndLoadMultipleTasks() throws IOException {
-        File tempFile = File.createTempFile("empty", "csv");
-        FileBackedTaskManager manager = new FileBackedTaskManager(tempFile);
-
-        LocalDateTime now = LocalDateTime.of(2025, 5, 29, 10, 0);
+    void saveAndLoadMultipleTasks() {
         Task task = new Task("Test", "Desc", TaskType.TASK,
                 Duration.ofMinutes(30), LocalDateTime.now());
 
@@ -49,7 +47,6 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
         Epic restoredEpic = restored.getEpicById(epic.getId());
         Subtask restoredSubtask = restored.getSubtask(subtask.getId());
 
-
         Assertions.assertEquals(task, restoredTask);
         Assertions.assertEquals(epic, restoredEpic);
         Assertions.assertEquals(subtask, restoredSubtask);
@@ -57,11 +54,9 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
     }
 
     @Test
-    void saveAndLoadEmptyManager() throws IOException {
-        File tempFail = File.createTempFile("empty", "csv");
-        FileBackedTaskManager manager = new FileBackedTaskManager(tempFail);
+    void saveAndLoadEmptyManager() {
         manager.save();
-        FileBackedTaskManager.loadFromFile(tempFail);
+        FileBackedTaskManager.loadFromFile(tempFile);
         Assertions.assertTrue(manager.getTasks().isEmpty());
         Assertions.assertTrue(manager.getEpics().isEmpty());
         Assertions.assertTrue(manager.getSubtasks().isEmpty());

@@ -4,7 +4,10 @@ import ru.yandex.task.manager.managers.HistoryManager;
 import ru.yandex.task.manager.model.Node;
 import ru.yandex.task.manager.model.Task;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class InMemoryHistoryManager implements HistoryManager {
     private final Map<Integer, Node> history = new HashMap<>();
@@ -47,13 +50,13 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     public void linkFirst(Task task) {
-         Node newNode = new Node(null, task, head);
+        Node newNode = new Node(null, task, head);
         if (head == null) {
             tail = newNode;
         } else {
             head.setPrev(newNode);
         }
-        head=newNode;
+        head = newNode;
         history.put(task.getId(), newNode);
     }
 
