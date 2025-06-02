@@ -3,21 +3,70 @@ package ru.yandex.task.manager.model;
 import ru.yandex.task.manager.model.enums.Status;
 import ru.yandex.task.manager.model.enums.TaskType;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
-public class Task {
+import static java.util.Objects.hash;
+import static java.util.Objects.isNull;
+
+public class Task implements Comparable<Task> {
     private String nameTask;
     private String description;
     private int id;
     private Status status;
     private TaskType taskType;
+    private Duration duration; // Продолжительность задачи
+    private LocalDateTime startTime;
 
-    public Task(String nameTask, String description, TaskType taskType) {
+    public Task(String nameTask, String description, TaskType taskType, Duration duration, LocalDateTime startTime) {
         this.nameTask = nameTask;
         this.description = description;
-        this.status = Status.NEW;//по умолчанию задача новая
+        this.status = Status.NEW;
         this.taskType = taskType;
+        this.duration = duration;
+        this.startTime = startTime;
     }
+
+    public LocalDateTime getEndTime() {
+        if (isNull(startTime) || isNull(duration)) {
+            throw new NullPointerException("startTime and duration can't be null");
+        }
+        return startTime.plus(duration);
+    }
+
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public static boolean lappingTask(Task task1, Task task2) {
+        if (task1.getStartTime() == null || task1.getEndTime() == null ||
+                task2.getStartTime() == null || task2.getEndTime() == null) {
+            return false;
+        }
+        return !(task1.getEndTime().isBefore(task2.getStartTime()) ||
+                task2.getEndTime().isBefore(task1.getStartTime()));
+    }
+//    public static boolean lappingTask(Task task1, Task task2) {
+//        if (task1.getStartTime() == null || task1.getEndTime() == null ||
+//                task2.getStartTime() == null || task2.getEndTime() == null) {
+//            return false;
+//        }
+//        return !(task1.getStartTime().isBefore(task2.getStartTime()) ||
+//        task1.getEndTime().isAfter(task2.getEndTime()));
+//    }
 
     public String getNameTask() {
         return nameTask;
@@ -68,7 +117,7 @@ public class Task {
 
     @Override
     public int hashCode() {
-        return Objects.hash(nameTask, description, id, status);
+        return hash(nameTask, description, id, status);
     }
 
     @Override
@@ -80,4 +129,24 @@ public class Task {
                 ", status=" + status +
                 '}';
     }
+
+    @Override
+    public int compareTo(Task task) {
+        if (task == null) {
+            throw new NullPointerException("Compared task cannot be null");
+        }
+
+        if (this.startTime == null && task.startTime == null) {
+            return 0;
+        }
+        if (this.startTime == null) {
+            return 1;
+        }
+        if (task.startTime == null) {
+            return -1;
+        }
+        return this.startTime.compareTo(task.startTime);
+    }
+
+
 }

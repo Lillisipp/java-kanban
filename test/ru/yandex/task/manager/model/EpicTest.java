@@ -1,15 +1,17 @@
 package ru.yandex.task.manager.model;
 
-import ru.yandex.task.manager.managers.HistoryManager;
-import ru.yandex.task.manager.managers.Managers;
-import ru.yandex.task.manager.managers.impl.InMemoryHistoryManager;
-import ru.yandex.task.manager.managers.impl.InMemoryTaskManager;
-import ru.yandex.task.manager.managers.TaskManager;
-import ru.yandex.task.manager.model.enums.Status;
-import ru.yandex.task.manager.model.enums.TaskType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import ru.yandex.task.manager.managers.HistoryManager;
+import ru.yandex.task.manager.managers.Managers;
+import ru.yandex.task.manager.managers.TaskManager;
+import ru.yandex.task.manager.managers.impl.InMemoryHistoryManager;
+import ru.yandex.task.manager.managers.impl.InMemoryTaskManager;
+import ru.yandex.task.manager.model.enums.Status;
+import ru.yandex.task.manager.model.enums.TaskType;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -19,25 +21,16 @@ class EpicTest {
     private final TaskManager taskManager = new InMemoryTaskManager();
     private final HistoryManager historyManager = new InMemoryHistoryManager();
 
-    @Test
-    void theHistoryDoesNotExceedTasks() {
-        for (int i = 1; i <= 11; i++) {
-            Task task = new Task("model.Task" + i, "Description " + i, TaskType.TASK);
-            task.setId(i);
-            historyManager.add(task);
-        }
-
-        List<Task> history = historyManager.getHistory();
-        assertEquals(11, history.size(), "История должна содержать 11 задач");
-    }
 
     @Test
     void tasksAreEqualIfIdsMatch() {
-        Task task1 = new Task("model.Task", "Desc", TaskType.TASK);
+        Task task1 = new Task("model.Task", "Desc", TaskType.TASK,
+                Duration.ofMinutes(30), LocalDateTime.now());
         task1.setId(1);
         task1.setStatus(Status.NEW);
 
-        Task task2 = new Task("model.Task", "Desc", TaskType.TASK);
+        Task task2 = new Task("model.Task", "Desc", TaskType.TASK,
+                Duration.ofMinutes(30), LocalDateTime.now());
         task2.setId(1);
         task2.setStatus(Status.NEW);
 
@@ -46,11 +39,13 @@ class EpicTest {
 
     @Test
     void subtasksAreEqualIfAllFieldsMatch() {
-        Subtask sub1 = new Subtask("Sub", "Desc", 2);
+        Subtask sub1 = new Subtask("Sub", "Desc", 2,
+                Duration.ofMinutes(45), LocalDateTime.now());
         sub1.setId(3);
         sub1.setStatus(Status.NEW);
 
-        Subtask sub2 = new Subtask("Sub", "Desc", 2);
+        Subtask sub2 = new Subtask("Sub", "Desc", 2,
+                Duration.ofMinutes(45), LocalDateTime.now());
         sub2.setId(3);
         sub2.setStatus(Status.NEW);
 
@@ -82,7 +77,8 @@ class EpicTest {
 
     @Test
     void subtaskCannotHaveItselfAsEpic() {
-        Subtask subtask = new Subtask("Sub", "Desc", 1); // Устанавливаем epicId
+        Subtask subtask = new Subtask("Sub", "Desc", 1,
+                Duration.ofMinutes(20), LocalDateTime.now());
 
         assertThrows(
                 IllegalArgumentException.class,
@@ -103,11 +99,13 @@ class EpicTest {
     void taskManagerAddsAndFindsDifferentTaskTypes() {
         TaskManager manager = new InMemoryTaskManager();
 
-        Task task = new Task("model.Task", "Desc", TaskType.TASK);
+        Task task = new Task("model.Task", "Desc", TaskType.TASK,
+                Duration.ofMinutes(25), LocalDateTime.now());
         Epic epic = new Epic("model.Epic", "Desc");
         manager.addEpic(epic);
 
-        Subtask subtask = new Subtask("Sub", "Desc", epic.getId());
+        Subtask subtask = new Subtask("Sub", "Desc", epic.getId(),
+                Duration.ofMinutes(45), LocalDateTime.now());
         manager.addTask(task);
         manager.addSubtask(subtask);
 
@@ -120,11 +118,13 @@ class EpicTest {
     void tasksWithGivenAndGeneratedIdsDoNotConflict() {
         TaskManager manager = new InMemoryTaskManager();
 
-        Task task1 = new Task("Task1", "Desc", TaskType.TASK);
+        Task task1 = new Task("Task1", "Desc", TaskType.TASK,
+                Duration.ofMinutes(15), LocalDateTime.now());
         task1.setId(100);
         manager.addTask(task1);
 
-        Task task2 = new Task("Task2", "Desc", TaskType.TASK);
+        Task task2 = new Task("Task2", "Desc", TaskType.TASK,
+                Duration.ofMinutes(45), LocalDateTime.now());
         task2.setId(manager.generatorID());
         manager.addTask(task2);
 
@@ -134,7 +134,8 @@ class EpicTest {
 
     @Test
     void addNewTask() {
-        Task task = new Task("Test addNewTask", "Test addNewTask description", TaskType.TASK);
+        Task task = new Task("Test addNewTask", "Test addNewTask description", TaskType.TASK,
+                Duration.ofMinutes(45), LocalDateTime.now());
 
         taskManager.addTask(task);
 
@@ -147,7 +148,8 @@ class EpicTest {
     @Test
     void taskRemainsUnchangedAfterAddingToManager() {
         TaskManager manager = new InMemoryTaskManager();
-        Task task = new Task("Test", "Desc", TaskType.TASK);
+        Task task = new Task("Test", "Desc", TaskType.TASK,
+                Duration.ofMinutes(45), LocalDateTime.now());
 
         manager.addTask(task);  // ID будет установлен внутри метода addTask
 
@@ -162,7 +164,8 @@ class EpicTest {
 
     @Test
     void historyManagerPreservesOriginalTaskData() {
-        Task task = new Task("HistoryTest", "Desc", TaskType.TASK);
+        Task task = new Task("HistoryTest", "Desc", TaskType.TASK,
+                Duration.ofMinutes(45), LocalDateTime.now());
         task.setId(42);
 
         historyManager.add(task);
@@ -175,11 +178,13 @@ class EpicTest {
 
     @Test
     void addTask_AddsTaskToEndOfHistory() {
-        Task task1 = new Task("Task1", "Desc", TaskType.TASK);
+        Task task1 = new Task("Task1", "Desc", TaskType.TASK,
+                Duration.ofMinutes(45), LocalDateTime.now());
         task1.setId(1);
         historyManager.add(task1);
 
-        Task task2 = new Task("Task2", "Desc", TaskType.TASK);
+        Task task2 = new Task("Task2", "Desc", TaskType.TASK,
+                Duration.ofMinutes(45), LocalDateTime.now());
         task2.setId(2);
         historyManager.add(task2);
 

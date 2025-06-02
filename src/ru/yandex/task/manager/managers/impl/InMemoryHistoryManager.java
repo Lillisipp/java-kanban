@@ -4,7 +4,10 @@ import ru.yandex.task.manager.managers.HistoryManager;
 import ru.yandex.task.manager.model.Node;
 import ru.yandex.task.manager.model.Task;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class InMemoryHistoryManager implements HistoryManager {
     private final Map<Integer, Node> history = new HashMap<>();
@@ -24,36 +27,36 @@ public class InMemoryHistoryManager implements HistoryManager {
     public void add(Task task) {
         if (task == null) {
             return;
-        } else {
-            remove(task.getId());
-            linkLast(task);
         }
+        remove(task.getId());
+        linkFirst(task);
+
         if (history.size() > 10) {
-            Integer firstKey = history.keySet().iterator().next();
-            history.remove(firstKey);
+            history.remove(head.getTask().getId());
+            head = head.getNext();
+            head.setPrev(null);
         }
     }
 
     @Override
     public List<Task> getHistory() {
         List<Task> history = new ArrayList<>();
-        Node current = head;
+        Node current = tail;
         while (current != null) {
             history.add(current.getTask());
-            current = current.getNext();
+            current = current.getPrev();
         }
         return history;
     }
 
-    public void linkLast(Task task) {
-        final Node oldTail = tail;
-        final Node newNode = new Node(oldTail, task, null);
-        tail = newNode;
-        if (oldTail == null) {
-            head = newNode;
+    public void linkFirst(Task task) {
+        Node newNode = new Node(null, task, head);
+        if (head == null) {
+            tail = newNode;
         } else {
-            oldTail.setNext(newNode);
+            head.setPrev(newNode);
         }
+        head = newNode;
         history.put(task.getId(), newNode);
     }
 
