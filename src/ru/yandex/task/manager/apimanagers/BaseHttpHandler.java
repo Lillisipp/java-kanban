@@ -6,17 +6,26 @@ import com.sun.net.httpserver.HttpHandler;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-public class BaseHttpHandler extends HttpHandler {
-    protected void sendText(HttpExchange h, String text) throws IOException {
+public abstract class BaseHttpHandler implements HttpHandler {
+
+    protected void sendText(HttpExchange exchange, String text) throws IOException {
         byte[] resp = text.getBytes(StandardCharsets.UTF_8);
-        h.getResponseHeaders().add("Content-Type", "application/json;charset=utf-8");
-        h.sendResponseHeaders(200, resp.length);
-        h.getResponseBody().write(resp);
-        h.close();
+        exchange.getResponseHeaders().add("Content-Type", "application/json;charset=utf-8");
+        exchange.sendResponseHeaders(200, resp.length);
+        exchange.getResponseBody().write(resp);
+        exchange.close();
     }
 
-    @Override
-    public void handle(HttpExchange exchange) throws IOException {
-
+    protected void sendNotFound(HttpExchange exchange) throws IOException {
+        exchange.sendResponseHeaders(404, 0);
     }
+
+    protected void sendHasInteractions(HttpExchange exchange) throws IOException {
+        exchange.sendResponseHeaders(406, 0);
+    }
+
+    protected void sendServerError(HttpExchange exchange) throws IOException {
+        exchange.sendResponseHeaders(500, 0);
+    }
+
 }
