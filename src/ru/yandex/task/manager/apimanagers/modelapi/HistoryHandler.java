@@ -1,34 +1,35 @@
 package ru.yandex.task.manager.apimanagers.modelapi;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpExchange;
 import ru.yandex.task.manager.apimanagers.BaseHttpHandler;
+import ru.yandex.task.manager.managers.TaskManager;
 
 import java.io.IOException;
 
 public class HistoryHandler extends BaseHttpHandler {
+    private final TaskManager manager;
+    private final Gson gson = new GsonBuilder().create();
+
+    public HistoryHandler(TaskManager manager) {
+        this.manager = manager;
+    }
 
     public void handle(HttpExchange exchange) throws IOException {
         try {
-
-            switch () {
-                case "GET":
-
-                    break;
-                case "POST":
-
-                    break;
-                case "DELETE":
-
-                    break;
-                default:
-
+            String method = exchange.getRequestMethod();
+            if ("GET".equals(method)) {
+                handlerGet(exchange);
+            } else {
+                exchange.sendResponseHeaders(405, 0);
             }
-
         } catch (Exception e) {
             throw new RuntimeException(e);
-        } finally {
-            exchange.close();
         }
     }
 
+    private void handlerGet(HttpExchange exchange) throws IOException {
+        String json = gson.toJson(manager.getHistoryManager());//гетхистори в классе хистори менеджер? ане в таск менеджер
+    }
 }

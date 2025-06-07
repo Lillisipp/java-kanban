@@ -16,8 +16,8 @@ public class HttpTaskServer {
     public HttpTaskServer() throws IOException {
         manager = Managers.getDefault();
         server = HttpServer.create(new InetSocketAddress(port), 0);
-        server.createContext("/tasks", new TasksHandler(manager);//GET
-        server.createContext("/tasks/{id}", new TasksHandler(manager);
+        server.createContext("/tasks", new TasksHandler(manager));
+        server.createContext("/tasks/{id}", new TasksHandler(manager));
 
         server.createContext("/subtasks", new SubtasksHandler(manager));
         server.createContext("/subtasks/{id}", new SubtasksHandler(manager));

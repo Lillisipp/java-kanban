@@ -80,7 +80,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Subtask getSubtask(int id) {
+    public Subtask getSubtaskByID(int id) {
         Subtask subtask = subtasks.get(id);
         historyManager.add(subtask);
         return subtask;

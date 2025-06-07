@@ -1,25 +1,40 @@
 package ru.yandex.task.manager.apimanagers.modelapi;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import ru.yandex.task.manager.apimanagers.BaseHttpHandler;
+import ru.yandex.task.manager.managers.TaskManager;
+import ru.yandex.task.manager.model.Epic;
+import ru.yandex.task.manager.model.Task;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 public class EpicsHandler extends BaseHttpHandler {
-    HttpHandler
+    private final TaskManager manager;
+    private final Gson gson = new GsonBuilder().create();
+
+    public EpicsHandler(TaskManager manager) {
+        this.manager = manager;
+    }
+
     public void handle(HttpExchange exchange) throws IOException {
         try {
-
-            switch () {
+            String method = exchange.getRequestMethod();
+            String query = exchange.getRequestURI().getQuery();
+            switch (method) {
                 case "GET":
-
+                    handlerGetEpic(exchange, query);
                     break;
                 case "POST":
-
+                    handlePost(exchange);
                     break;
                 case "DELETE":
-
+                    handleDelete(exchange, query);
                     break;
                 default:
 
@@ -32,5 +47,41 @@ public class EpicsHandler extends BaseHttpHandler {
         }
     }
 
+    private void handlerGetEpic(HttpExchange exchange, String query) throws IOException {
+        if (query != null && query.startsWith("id=")) {
+            int id = Integer.parseInt(query.replace("id=", ""));
+            Epic epic = manager.getEpicById(id);
+            if (epic == null) {
+                sendNotFound(exchange);
+                return;
+            }
+            sendText(exchange, gson.toJson(epic));
+        } else {
+            List<Task> tasks = new ArrayList<>(manager.getTasks().values());
+            sendText(exchange, gson.toJson(tasks));
+        }
+    }
+
+    private void handlePost(HttpExchange exchange) throws IOException {
+        InputStream body = exchange.getRequestBody();
+        String json = new String(body.readAllBytes(), StandardCharsets.UTF_8);
+        Epic epic = gson.fromJson(json, Epic.class);
+        try {
+            manager.addEpic(epic);
+            exchange.sendResponseHeaders(201, 0);
+        } catch (Exception e) {
+            sendHasInteractions(exchange);
+        }
+    }
+
+    private void handleDelete(HttpExchange exchange, String query) throws IOException {
+        if (query != null && query.startsWith("id=")) { // 1. Если в строке запроса есть id
+            int id = Integer.parseInt(query.replace("id=", ""));
+            manager.deleteEpic(id);
+        } else {
+            manager.removeEpic();
+        }
+        exchange.sendResponseHeaders(200, 0);
+    }
 
 }
