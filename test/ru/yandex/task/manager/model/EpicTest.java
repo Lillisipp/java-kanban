@@ -111,7 +111,7 @@ class EpicTest {
 
         Assertions.assertEquals(task, manager.getTaskById(task.getId()));
         Assertions.assertEquals(epic, manager.getEpicById(epic.getId()));
-        Assertions.assertEquals(subtask, manager.getSubtask(subtask.getId()));
+        Assertions.assertEquals(subtask, manager.getSubtaskByID(subtask.getId()));
     }
 
     @Test

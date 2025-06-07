@@ -80,7 +80,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Subtask getSubtask(int id) {
+    public Subtask getSubtaskByID(int id) {
         Subtask subtask = subtasks.get(id);
         historyManager.add(subtask);
         return subtask;
@@ -182,19 +182,24 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
+    @Override
     public HashMap<Integer, Task> getTasks() {
         return tasks;
     }
 
+    @Override
     public HashMap<Integer, Subtask> getSubtasks() {
         return subtasks;
     }
 
+    @Override
     public HashMap<Integer, Epic> getEpics() {
         return epics;
     }
 
+    @Override
     public HistoryManager getHistoryManager() {
         return historyManager;
     }
+
 }

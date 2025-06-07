@@ -4,6 +4,7 @@ import ru.yandex.task.manager.model.Epic;
 import ru.yandex.task.manager.model.Subtask;
 import ru.yandex.task.manager.model.Task;
 
+import java.util.HashMap;
 import java.util.List;
 
 public interface TaskManager {
@@ -23,7 +24,7 @@ public interface TaskManager {
 
     Task getTaskById(int id);
 
-    Subtask getSubtask(int id);
+    Subtask getSubtaskByID(int id);
 
     Epic getEpicById(int id);
 
@@ -42,4 +43,12 @@ public interface TaskManager {
     List<Task> getPrioritizedTasks();
 
     public boolean hasOverlaps(Task newTask);
+
+    public HashMap<Integer, Task> getTasks();
+
+    public HashMap<Integer, Subtask> getSubtasks();
+
+    public HashMap<Integer, Epic> getEpics();
+
+    public HistoryManager getHistoryManager();
 }
