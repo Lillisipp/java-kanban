@@ -30,6 +30,6 @@ public class HistoryHandler extends BaseHttpHandler {
     }
 
     private void handlerGet(HttpExchange exchange) throws IOException {
-        String json = gson.toJson(manager.getHistoryManager());//гетхистори в классе хистори менеджер? ане в таск менеджер
+        String json = gson.toJson(manager.getHistoryManager().getHistory());//гетхистори в классе хистори менеджер? ане в таск менеджер
     }
 }
