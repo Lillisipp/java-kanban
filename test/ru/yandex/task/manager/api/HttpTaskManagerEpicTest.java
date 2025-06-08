@@ -23,7 +23,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class HttpTaskManagerTasksTest {
+public class HttpTaskManagerEpicTest {
 
     // создаём экземпляр InMemoryTaskManager
     TaskManager manager = new InMemoryTaskManager();
@@ -31,7 +31,7 @@ public class HttpTaskManagerTasksTest {
     HttpTaskServer taskServer = new HttpTaskServer(manager);
     Gson gson = HttpTaskServer.getGson();
 
-    public HttpTaskManagerTasksTest() throws IOException {
+    public HttpTaskManagerEpicTest() throws IOException {
     }
 
     @BeforeEach
@@ -71,26 +71,5 @@ public class HttpTaskManagerTasksTest {
         assertNotNull(tasksFromManager, "Задачи не возвращаются");
         assertEquals(1, tasksFromManager.size(), "Некорректное количество задач");
         assertEquals("Test 2", tasksFromManager.get(0).getNameTask(), "Некорректное имя задачи");
-    }
-        @Test
-    public void testGetTasksEmpty() throws Exception {
-        // Удаляем все задачи
-        manager.removeTask();
-
-        // Формируем GET-запрос на /tasks
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:8080/tasks"))
-                .GET()
-                .build();
-
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-        // Проверяем статус 200
-        assertEquals(200, response.statusCode());
-
-        // Проверяем, что список задач пустой
-        String body = response.body();
-        Task[] tasks = gson.fromJson(body, Task[].class);
-        assertEquals(0, tasks.length);
     }
 }

@@ -9,6 +9,8 @@ import ru.yandex.task.manager.managers.TaskManager;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 public class HttpTaskServer {
     public static final int port = 8080;
@@ -45,10 +47,11 @@ public class HttpTaskServer {
 
     public static Gson getGson() {
         return new GsonBuilder()
+                .registerTypeAdapter(Duration.class,new DurationAdapter())
+                .registerTypeAdapter(LocalDateTime.class,new LocalDateTimeAdapter())
                 .setPrettyPrinting()
                 .create();
     }
-
 
     public static void main(String[] args) throws IOException {
         TaskManager manager = Managers.getDefault(); // например InMemoryTaskManager

@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import ru.yandex.task.manager.apimanagers.HttpTaskServer;
 import ru.yandex.task.manager.managers.TaskManager;
 import ru.yandex.task.manager.managers.impl.InMemoryTaskManager;
+import ru.yandex.task.manager.model.Subtask;
 import ru.yandex.task.manager.model.Task;
 import ru.yandex.task.manager.model.enums.TaskType;
 
@@ -23,7 +24,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class HttpTaskManagerTasksTest {
+public class HttpTaskManagerSubtaskTest {
 
     // создаём экземпляр InMemoryTaskManager
     TaskManager manager = new InMemoryTaskManager();
@@ -31,7 +32,7 @@ public class HttpTaskManagerTasksTest {
     HttpTaskServer taskServer = new HttpTaskServer(manager);
     Gson gson = HttpTaskServer.getGson();
 
-    public HttpTaskManagerTasksTest() throws IOException {
+    public HttpTaskManagerSubtaskTest() throws IOException {
     }
 
     @BeforeEach
@@ -72,25 +73,25 @@ public class HttpTaskManagerTasksTest {
         assertEquals(1, tasksFromManager.size(), "Некорректное количество задач");
         assertEquals("Test 2", tasksFromManager.get(0).getNameTask(), "Некорректное имя задачи");
     }
-        @Test
-    public void testGetTasksEmpty() throws Exception {
-        // Удаляем все задачи
-        manager.removeTask();
 
-        // Формируем GET-запрос на /tasks
+    @Test
+    public void testGetSubtasks() throws IOException, InterruptedException {
+        // Подготовка данных
+        Subtask subtask = new Subtask("Test Subtask", "Test description", TaskType.SUBTASK, Duration.ofMinutes(5), LocalDateTime.now());
+        manager.addSubtask(subtask);
+
+        // GET-запрос
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:8080/tasks"))
+                .uri(URI.create("http://localhost:8080/subtasks"))
                 .GET()
                 .build();
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-        // Проверяем статус 200
         assertEquals(200, response.statusCode());
 
-        // Проверяем, что список задач пустой
-        String body = response.body();
-        Task[] tasks = gson.fromJson(body, Task[].class);
-        assertEquals(0, tasks.length);
+        Subtask[] subtasks = gson.fromJson(response.body(), Subtask[].class);
+        assertEquals(1, subtasks.length);
+        assertEquals("Test Subtask", subtasks[0].getNameTask());
     }
+
 }
