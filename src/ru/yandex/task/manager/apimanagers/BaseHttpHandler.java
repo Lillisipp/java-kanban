@@ -13,19 +13,25 @@ public abstract class BaseHttpHandler implements HttpHandler {
         exchange.getResponseHeaders().add("Content-Type", "application/json;charset=utf-8");
         exchange.sendResponseHeaders(200, resp.length);
         exchange.getResponseBody().write(resp);
-        exchange.close();
+        exchange.getResponseBody().close();
     }
 
     protected void sendNotFound(HttpExchange exchange) throws IOException {
-        exchange.sendResponseHeaders(404, 0);
+        exchange.sendResponseHeaders(404, -1);
+        exchange.getResponseBody().close();
+
     }
 
     protected void sendHasInteractions(HttpExchange exchange) throws IOException {
-        exchange.sendResponseHeaders(406, 0);
+        exchange.sendResponseHeaders(406, -1);
+        exchange.getResponseBody().close();
+
     }
 
     protected void sendServerError(HttpExchange exchange) throws IOException {
-        exchange.sendResponseHeaders(500, 0);
+        exchange.sendResponseHeaders(500, -1);
+        exchange.getResponseBody().close();
+
     }
 
 }

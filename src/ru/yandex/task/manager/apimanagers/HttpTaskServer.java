@@ -23,14 +23,8 @@ public class HttpTaskServer {
         server = HttpServer.create(new InetSocketAddress(port), 0);
 
         server.createContext("/tasks", new TasksHandler(manager));
-        server.createContext("/tasks/{id}", new TasksHandler(manager));
-
         server.createContext("/subtasks", new SubtasksHandler(manager));
-        server.createContext("/subtasks/{id}", new SubtasksHandler(manager));
-
         server.createContext("/epics", new EpicsHandler(manager));
-        server.createContext("/epics/{id}", new EpicsHandler(manager));
-
         server.createContext("/history", new HistoryHandler(manager));
         server.createContext("/prioritized", new PrioritizedHandler(manager));
     }
@@ -47,8 +41,8 @@ public class HttpTaskServer {
 
     public static Gson getGson() {
         return new GsonBuilder()
-                .registerTypeAdapter(Duration.class,new DurationAdapter())
-                .registerTypeAdapter(LocalDateTime.class,new LocalDateTimeAdapter())
+                .registerTypeAdapter(Duration.class, new DurationAdapter())
+                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
                 .setPrettyPrinting()
                 .create();
     }
@@ -57,6 +51,5 @@ public class HttpTaskServer {
         TaskManager manager = Managers.getDefault(); // например InMemoryTaskManager
         HttpTaskServer server = new HttpTaskServer(manager);
         server.start();
-
     }
 }

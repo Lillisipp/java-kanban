@@ -28,7 +28,7 @@ public class TasksHandler extends BaseHttpHandler {
             String query = exchange.getRequestURI().getQuery();
             switch (method) {
                 case "GET":
-                    handlerGetTask(exchange, query);
+                    handlerGet(exchange, query);
                     break;
                 case "POST":
                     handlePost(exchange);
@@ -39,15 +39,12 @@ public class TasksHandler extends BaseHttpHandler {
                 default:
                     exchange.sendResponseHeaders(405, 0);
             }
-
         } catch (Exception e) {
             throw new RuntimeException(e);
-        } finally {
-            exchange.close();
         }
     }
 
-    private void handlerGetTask(HttpExchange exchange, String query) throws IOException {
+    private void handlerGet(HttpExchange exchange, String query) throws IOException {
         if (query != null && query.startsWith("id=")) {
             int id = Integer.parseInt(query.replace("id=", ""));
             Task task = manager.getTaskById(id);
@@ -68,9 +65,11 @@ public class TasksHandler extends BaseHttpHandler {
         Task task = gson.fromJson(json, Task.class);
         try {
             manager.addTask(task);
-            exchange.sendResponseHeaders(201, 0);
+            exchange.sendResponseHeaders(201, -1);
         } catch (Exception e) {
             sendHasInteractions(exchange);
+        } finally {
+            exchange.getResponseBody().close();
         }
     }
 
@@ -81,7 +80,8 @@ public class TasksHandler extends BaseHttpHandler {
         } else {
             manager.removeTask();
         }
-        exchange.sendResponseHeaders(200, 0);
+        exchange.sendResponseHeaders(200, -1);
+        exchange.getResponseBody().close();
     }
 
 }
