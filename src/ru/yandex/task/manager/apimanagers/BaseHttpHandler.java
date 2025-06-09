@@ -89,4 +89,13 @@ public abstract class BaseHttpHandler implements HttpHandler {
         exchange.sendResponseHeaders(201, responseBytes.length);
         exchange.getResponseBody().write(responseBytes);
     }
+
+    protected int parsID(String path) {
+        String id = path.replaceAll("\\D*", "");
+        try {
+            return Integer.parseInt(id);
+        } catch (NumberFormatException e) {
+            return -1;
+        }
+    }
 }
