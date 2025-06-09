@@ -1,7 +1,8 @@
-package ru.yandex.task.manager.apimanagers;
+package ru.yandex.task.manager.utils.adapters;
 
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
@@ -19,8 +20,12 @@ public class DurationAdapter extends TypeAdapter<Duration> {
 
     @Override
     public Duration read(JsonReader jsonReader) throws IOException {
-        String durationString = jsonReader.nextString();
-        return Duration.parse(durationString);
+        if (jsonReader.peek() == JsonToken.STRING) {
+            String durationString = jsonReader.nextString();
+            return Duration.parse(durationString);
+        } else {
+            jsonReader.nextNull();
+            return null;
+        }
     }
-
 }

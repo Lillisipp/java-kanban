@@ -42,15 +42,6 @@ public class HttpTaskServer {
         System.out.println("HTTP-сервер остановлен");
     }
 
-    public static Gson getGson() {
-        return new GsonBuilder()
-                .serializeNulls()
-                .registerTypeAdapter(Duration.class, new DurationAdapter())
-                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
-                .setPrettyPrinting()
-                .create();
-    }
-
     public static void main(String[] args) throws IOException {
         TaskManager manager = Managers.getDefault(); // например InMemoryTaskManager
         HttpTaskServer server = new HttpTaskServer(manager);

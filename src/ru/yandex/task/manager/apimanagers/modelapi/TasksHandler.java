@@ -19,7 +19,6 @@ import java.util.regex.Pattern;
 
 public class TasksHandler extends BaseHttpHandler {
     private final TaskManager manager;
-    private final Gson gson = new GsonBuilder().create();
 
     public TasksHandler(TaskManager manager) {
         this.manager = manager;

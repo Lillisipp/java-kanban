@@ -10,10 +10,7 @@ import static ru.yandex.task.manager.model.enums.Status.*;
 
 public class Epic extends Task {
     private List<Integer> subtaskIds;
-    private Duration duration;
-    private LocalDateTime startTime;
     private LocalDateTime endTime;
-
 
     public Epic(String nameTask, String description) {
         super(nameTask, description, TaskType.EPIC, null, null);
@@ -89,21 +86,10 @@ public class Epic extends Task {
         this.duration = allDuration.isZero() ? null : allDuration;
         this.startTime = start;
         this.endTime = end;
-
     }
 
     @Override
     public LocalDateTime getEndTime() {
         return endTime;
-    }
-
-    @Override
-    public Duration getDuration() {
-        return duration;
-    }
-
-    @Override
-    public LocalDateTime getStartTime() {
-        return startTime;
     }
 }

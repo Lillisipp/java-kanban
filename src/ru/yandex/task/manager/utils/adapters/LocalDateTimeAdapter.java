@@ -1,7 +1,8 @@
-package ru.yandex.task.manager.apimanagers;
+package ru.yandex.task.manager.utils.adapters;
 
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
@@ -22,7 +23,12 @@ public class LocalDateTimeAdapter extends TypeAdapter<LocalDateTime> {
 
     @Override
     public LocalDateTime read(JsonReader in) throws IOException {
-        String value = in.nextString();
-        return LocalDateTime.parse(value, FORMATTER);
+        if (in.peek() == JsonToken.STRING) {
+            String value = in.nextString();
+            return LocalDateTime.parse(value, FORMATTER);
+        } else {
+            in.nextNull();
+            return null;
+        }
     }
 }

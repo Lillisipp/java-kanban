@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.util.List;
 
 public class PrioritizedHandler extends BaseHttpHandler {
-    private final Gson gson = new GsonBuilder().create();
     private final TaskManager manager;
 
     public PrioritizedHandler(TaskManager manager) {
