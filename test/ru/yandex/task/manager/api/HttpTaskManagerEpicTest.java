@@ -92,8 +92,10 @@ public class HttpTaskManagerEpicTest {
 
         HttpClient client = HttpClient.newHttpClient();
         URI url = URI.create(BASE_URL+"/epics/" + epic.getId());
-        HttpRequest request = HttpRequest.newBuilder().uri(url).DELETE().build();
-
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(url)
+                .DELETE()
+                .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, response.statusCode());
         assertNull(manager.getEpicById(epic.getId()), "Эпик не удалён");

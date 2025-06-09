@@ -94,6 +94,7 @@ public class EpicsHandler extends BaseHttpHandler {
             int epicId = parseId(path);
             if (epicId >= 0) {
                 manager.deleteEpic(epicId);
+                sendCode(exchange,200);
                 return;
             }
         }
