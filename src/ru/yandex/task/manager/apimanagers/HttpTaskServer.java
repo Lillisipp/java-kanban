@@ -19,28 +19,32 @@ public class HttpTaskServer {
 
     public HttpTaskServer(TaskManager manager) throws IOException {
         this.manager = manager;
+        this.server = HttpServer.create(new InetSocketAddress(port), 0);
+        createContexts();
+    }
 
-        server = HttpServer.create(new InetSocketAddress(port), 0);
-
-        server.createContext("/tasks", new TasksHandler(manager));
-        server.createContext("/subtasks", new SubtasksHandler(manager));
-        server.createContext("/epics", new EpicsHandler(manager));
-        server.createContext("/history", new HistoryHandler(manager));
-        server.createContext("/prioritized", new PrioritizedHandler(manager));
+    private void createContexts() {
+        server.createContext("/tasks", new TasksHandler(this.manager));
+        server.createContext("/subtasks", new SubtasksHandler(this.manager));
+        server.createContext("/epics", new EpicsHandler(this.manager));
+        server.createContext("/history", new HistoryHandler(this.manager));
+        server.createContext("/prioritized", new PrioritizedHandler(this.manager));
+        server.setExecutor(null);
     }
 
     public void start() {
-        server.start();
+        this.server.start();
         System.out.println("HTTP-сервер запущен на порту " + port);
     }
 
     public void stop() {
-        server.stop(0);
+        this.server.stop(0);
         System.out.println("HTTP-сервер остановлен");
     }
 
     public static Gson getGson() {
         return new GsonBuilder()
+                .serializeNulls()
                 .registerTypeAdapter(Duration.class, new DurationAdapter())
                 .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
                 .setPrettyPrinting()
