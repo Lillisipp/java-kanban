@@ -1,7 +1,5 @@
 package ru.yandex.task.manager.apimanagers.modelapi;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpExchange;
 import ru.yandex.task.manager.apimanagers.BaseHttpHandler;
 import ru.yandex.task.manager.managers.TaskManager;

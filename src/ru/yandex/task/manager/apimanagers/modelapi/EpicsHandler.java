@@ -72,10 +72,6 @@ public class EpicsHandler extends BaseHttpHandler {
 
 
     private void handlePost(HttpExchange exchange, String path) throws IOException {
-//        if (pathParts.length != 2) {
-//            sendNotFound(exchange);
-//            return;
-//        }
         InputStream body = exchange.getRequestBody();
         String json = new String(body.readAllBytes(), DEFAULT_CHARSET);
         Epic epic;
@@ -94,7 +90,7 @@ public class EpicsHandler extends BaseHttpHandler {
             int epicId = parseId(path);
             if (epicId >= 0) {
                 manager.deleteEpic(epicId);
-                sendCode(exchange,200);
+                sendCode(exchange, 200);
                 return;
             }
         }
