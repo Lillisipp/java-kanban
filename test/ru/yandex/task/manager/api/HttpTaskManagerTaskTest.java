@@ -7,7 +7,10 @@ import org.junit.jupiter.api.Test;
 import ru.yandex.task.manager.apimanagers.HttpTaskServer;
 import ru.yandex.task.manager.managers.TaskManager;
 import ru.yandex.task.manager.managers.impl.InMemoryTaskManager;
+import ru.yandex.task.manager.model.Epic;
+import ru.yandex.task.manager.model.Subtask;
 import ru.yandex.task.manager.model.Task;
+import ru.yandex.task.manager.model.enums.Status;
 import ru.yandex.task.manager.model.enums.TaskType;
 import ru.yandex.task.manager.utils.GsonUtils;
 
@@ -152,4 +155,25 @@ public class HttpTaskManagerTaskTest {
         Task updated = manager.getTaskById(task.getId());
         assertEquals("Updated", updated.getNameTask(), "Задача не обновилась");
     }
+
+    @Test
+    public void testTheIntersectionOfTasks() throws IOException, InterruptedException {
+
+        manager.addTask(new Task("S1", "desc", TaskType.TASK,
+                Duration.ofMinutes(45), LocalDateTime.now()));
+        Task task = new Task("S2", "desc", TaskType.TASK,
+                Duration.ofMinutes(45), LocalDateTime.now());
+
+        String json = gson.toJson(task);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/tasks"))
+                .POST(HttpRequest.BodyPublishers.ofString(json))
+                .build();
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        assertEquals(406, response.statusCode());
+    }
+
 }

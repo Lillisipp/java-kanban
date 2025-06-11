@@ -2,6 +2,7 @@ package ru.yandex.task.manager.apimanagers.modelapi;
 
 import com.sun.net.httpserver.HttpExchange;
 import ru.yandex.task.manager.apimanagers.BaseHttpHandler;
+import ru.yandex.task.manager.exception.IntersectionException;
 import ru.yandex.task.manager.managers.TaskManager;
 import ru.yandex.task.manager.model.Epic;
 import ru.yandex.task.manager.model.Subtask;
@@ -74,13 +75,17 @@ public class TasksHandler extends BaseHttpHandler {
                         sendNotFound(exchange);
                     }
                 } else {
-                    manager.addTask(task);
-                    exchange.sendResponseHeaders(201, 0);
+                    try {
+                        manager.addTask(task);
+                        exchange.sendResponseHeaders(201, 0);
+                    } catch (IntersectionException e) {
+                        sendHasInteractions(exchange);
+                    }
                 }
             }
-            default -> sendMethodNotAllowed(exchange);
         }
     }
+
 
     private void handleTaskById(HttpExchange exchange, String method, String path) throws IOException {
         int id;

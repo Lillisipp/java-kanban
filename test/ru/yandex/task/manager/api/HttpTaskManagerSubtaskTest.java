@@ -162,4 +162,25 @@ public class HttpTaskManagerSubtaskTest {
 
         assertEquals(400, response.statusCode(), "Ожидалась ошибка при неверном JSON");
     }
+
+    @Test
+    public void testTheIntersectionOfSubtasks() throws IOException, InterruptedException {
+        Epic epic = new Epic("Epic", "desc");
+        manager.addEpic(epic);
+        manager.addSubtask(new Subtask("S1", "desc", epic.getId(),
+                Duration.ofMinutes(45), LocalDateTime.now()));
+        Subtask subtask = new Subtask("S2", "desc", epic.getId(),
+                Duration.ofMinutes(45), LocalDateTime.now());
+
+        String json = gson.toJson(subtask);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/subtasks"))
+                .POST(HttpRequest.BodyPublishers.ofString(json))
+                .build();
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        assertEquals(406, response.statusCode());
+    }
 }

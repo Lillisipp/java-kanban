@@ -82,14 +82,14 @@ public abstract class BaseHttpHandler implements HttpHandler {
     protected void sendAddResult(HttpExchange exchange, Subtask subtask) throws IOException {
         try {
             manager.addSubtask(subtask);
+            byte[] responseBytes = ADDED_SUCCESSFULLY.getBytes(DEFAULT_CHARSET);
+            exchange.sendResponseHeaders(201, responseBytes.length);
+            exchange.getResponseBody().write(responseBytes);
         } catch (IntersectionException e) {
             sendHasInteractions(exchange);
         } catch (Exception e) {
             sendBadRequest(exchange, e.getMessage());
         }
-        byte[] responseBytes = ADDED_SUCCESSFULLY.getBytes(DEFAULT_CHARSET);
-        exchange.sendResponseHeaders(201, responseBytes.length);
-        exchange.getResponseBody().write(responseBytes);
     }
 
     protected int parseId(String path) {

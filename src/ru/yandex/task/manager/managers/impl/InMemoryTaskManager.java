@@ -1,5 +1,6 @@
 package ru.yandex.task.manager.managers.impl;
 
+import ru.yandex.task.manager.exception.IntersectionException;
 import ru.yandex.task.manager.managers.HistoryManager;
 import ru.yandex.task.manager.managers.Managers;
 import ru.yandex.task.manager.managers.TaskManager;
@@ -103,10 +104,11 @@ public class InMemoryTaskManager implements TaskManager {
         }
         task.setId(generatorID());
         if (hasOverlaps(task)) {
-            return;
+            throw new IntersectionException("Task %s has intersection".formatted(task.getNameTask()));
         }
         tasks.put(task.getId(), task);
         prioritizedTasks.add(task);
+
     }
 
     @Override
@@ -130,6 +132,8 @@ public class InMemoryTaskManager implements TaskManager {
                 epic.updateStatus(subtasks);
                 epic.updateTimeEpic(subtasks);
             }
+        } else {
+            throw new IntersectionException("Subtask %s has intersection".formatted(subtask.getNameTask()));
         }
     }
 
@@ -201,5 +205,4 @@ public class InMemoryTaskManager implements TaskManager {
     public HistoryManager getHistoryManager() {
         return historyManager;
     }
-
 }
