@@ -83,7 +83,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
         Subtask s1 = new Subtask("Sub1", "d", epic.getId(), Duration.ofMinutes(10), LocalDateTime.now());
         s1.setStatus(Status.NEW);
-        Subtask s2 = new Subtask("Sub2", "d", epic.getId(), Duration.ofMinutes(10), LocalDateTime.now());
+        Subtask s2 = new Subtask("Sub2", "d", epic.getId(), Duration.ofMinutes(45), LocalDateTime.of(2025, 1, 1, 10, 0));
         s2.setStatus(Status.DONE);
         manager.addSubtask(s1);
         manager.addSubtask(s2);

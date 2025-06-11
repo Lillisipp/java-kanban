@@ -120,8 +120,8 @@ public class InMemoryTaskManager implements TaskManager {
 
         subtask.setId(generatorID()); // Назначаем подзадаче уникальный ID
 
-        subtasks.put(subtask.getId(), subtask);
         if (!hasOverlaps(subtask)) {
+            subtasks.put(subtask.getId(), subtask);
             prioritizedTasks.add(subtask);
         }
 

@@ -28,7 +28,7 @@ public class HttpTaskManagerTaskTest {
     private HttpTaskServer taskServer;
     private Gson gson;
 
-    private static final String BASE_URL = "http://localhost:8080";
+    protected static final String BASE_URL = "http://localhost:8080";
 
     @BeforeEach
     public void setUp() throws IOException {
@@ -110,8 +110,11 @@ public class HttpTaskManagerTaskTest {
         manager.addTask(new Task("Task 1", "Desc 1",
                 TaskType.TASK, Duration.ofMinutes(60),
                 LocalDateTime.of(2025, 1, 1, 10, 0)));
-
         manager.addTask(new Task("Task 2", "Desc 2",
+                TaskType.TASK, Duration.ofMinutes(60),
+                LocalDateTime.of(2025, 1, 1, 10, 0)));
+
+        manager.addTask(new Task("Task 3", "Desc 3",
                 TaskType.TASK, Duration.ofMinutes(60),
                 LocalDateTime.of(2026, 1, 1, 10, 0)));
 

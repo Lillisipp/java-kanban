@@ -1,78 +1,165 @@
-//package ru.yandex.task.manager.api;
+package ru.yandex.task.manager.api;
+
+import com.google.gson.Gson;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import ru.yandex.task.manager.apimanagers.HttpTaskServer;
+import ru.yandex.task.manager.managers.TaskManager;
+import ru.yandex.task.manager.managers.impl.InMemoryTaskManager;
+import ru.yandex.task.manager.model.Epic;
+import ru.yandex.task.manager.model.Subtask;
+import ru.yandex.task.manager.utils.GsonUtils;
+
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+public class HttpTaskManagerSubtaskTest {
+    private TaskManager manager;
+    private HttpTaskServer taskServer;
+    private Gson gson;
+    private static final String BASE_URL = "http://localhost:8080";
+
+    @BeforeEach
+    public void setUp() throws IOException {
+        manager = new InMemoryTaskManager();
+        taskServer = new HttpTaskServer(manager);
+        gson = GsonUtils.getGson();
+        manager.removeTask();
+        manager.removeEpic();
+        manager.removeSubtask();
+        taskServer.start();
+    }
+
+    @AfterEach
+    public void tearDown() {
+        taskServer.stop();
+    }
+
+//    @Test
+//    public void testAddSubtask() throws IOException, InterruptedException {
+//        Epic epic = new Epic("Epic 1", "desc");
+//        manager.addEpic(epic);
+//        Subtask subtask = new Subtask("Subtask 1", "desc", epic.getId(),
+//                Duration.ofMinutes(45), LocalDateTime.now());
 //
-//import com.google.gson.Gson;
-//import org.junit.jupiter.api.AfterEach;
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.Test;
-//import ru.yandex.task.manager.apimanagers.HttpTaskServer;
-//import ru.yandex.task.manager.managers.TaskManager;
-//import ru.yandex.task.manager.managers.impl.InMemoryTaskManager;
-//import ru.yandex.task.manager.model.Task;
-//import ru.yandex.task.manager.model.enums.TaskType;
+//        manager.addSubtask(subtask);
 //
-//import java.io.IOException;
-//import java.net.URI;
-//import java.net.http.HttpClient;
-//import java.net.http.HttpRequest;
-//import java.net.http.HttpResponse;
-//import java.time.Duration;
-//import java.time.LocalDateTime;
-//import java.util.ArrayList;
-//import java.util.List;
+//        String json = gson.toJson(subtask);
+//        HttpClient client = HttpClient.newHttpClient();
 //
-//import static org.junit.jupiter.api.Assertions.assertEquals;
-//import static org.junit.jupiter.api.Assertions.assertNotNull;
+//        HttpRequest request = HttpRequest.newBuilder()
+//                .uri(URI.create(BASE_URL + "/subtasks"))
+//                .POST(HttpRequest.BodyPublishers.ofString(json))
+//                .build();
 //
-//public class HttpTaskManagerSubtaskTest {
+//        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+//        assertEquals(201, response.statusCode(), "Ошибка при добавлении подзадачи");
 //
-//    TaskManager manager = new InMemoryTaskManager();
-//    HttpTaskServer taskServer = new HttpTaskServer(manager);
-//    Gson gson = HttpTaskServer.getGson();
-//    static final int PORT = 8080;
-//    URI url = URI.create("http://localhost:" + PORT + "/tasks");
-//    static HttpClient client = HttpClient.newHttpClient();
-//    HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
-//
-//    public HttpTaskManagerSubtaskTest() throws IOException {
-//    }
-//
-//    @BeforeEach
-//    public void setUp() {
-//        manager.removeTask();
-//        manager.removeSubtask();
-//        manager.removeEpic();
-//        taskServer.start();
-//    }
-//
-//    @AfterEach
-//    public void shutDown() {
-//        taskServer.stop();
+//        assertEquals(1, manager.getSubtasks().size(), "Подзадача не добавлена");
 //    }
 //
 //    @Test
-//    public void testAddSubTask() throws IOException, InterruptedException {
-//        // создаём задачу
-//        Task task = new Task("Test 2", "Testing task 2",
-//                TaskType.TASK, Duration.ofMinutes(5), LocalDateTime.now());
-//        // конвертируем её в JSON
-//        String taskJson = gson.toJson(task);
+//    public void testGetSubtaskById() throws IOException, InterruptedException {
+//        Epic epic = new Epic("Epic", "desc");
+//        manager.addEpic(epic);
+//        Subtask subtask = new Subtask("Sub", "desc", epic.getId(),
+//                Duration.ofMinutes(45), LocalDateTime.now());
 //
-//        // создаём HTTP-клиент и запрос
+//
+//        HttpRequest request = HttpRequest.newBuilder()
+//                .uri(URI.create(BASE_URL + "/subtasks/" + subtask.getId()))
+//                .GET()
+//                .build();
+//
 //        HttpClient client = HttpClient.newHttpClient();
-//        URI url = URI.create("http://localhost:8080/tasks");
-//        HttpRequest request = HttpRequest.newBuilder().uri(url).POST(HttpRequest.BodyPublishers.ofString(taskJson)).build();
-//
-//        // вызываем рест, отвечающий за создание задач
 //        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-//        // проверяем код ответа
 //        assertEquals(200, response.statusCode());
 //
-//        // проверяем, что создалась одна задача с корректным именем
-//        List<Task> tasksFromManager = new ArrayList<>(manager.getTasks().values());
-//
-//        assertNotNull(tasksFromManager, "Задачи не возвращаются");
-//        assertEquals(1, tasksFromManager.size(), "Некорректное количество задач");
-//        assertEquals("Test 2", tasksFromManager.get(0).getNameTask(), "Некорректное имя задачи");
+//        Subtask returned = gson.fromJson(response.body(), Subtask.class);
+//        assertEquals(subtask.getNameTask(), returned.getNameTask(), "Имена не совпадают");
 //    }
+
+//    @Test
+//    public void testDeleteSubtaskById() throws IOException, InterruptedException {
+//        Epic epic = new Epic("Epic", "desc");
+//        manager.addEpic(epic);
+//        Subtask subtask = new Subtask("To delete", "desc", epic.getId(),
+//                Duration.ofMinutes(45), LocalDateTime.now());
+//        manager.addSubtask(subtask);
+//        manager.deleteSubtask(epic.getId());
 //
-//}
+//        HttpRequest request = HttpRequest.newBuilder()
+//                .uri(URI.create(BASE_URL + "/subtasks/" + subtask.getId()))
+//                .DELETE()
+//                .build();
+//
+//        HttpClient client = HttpClient.newHttpClient();
+//        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+//        assertEquals(200, response.statusCode());
+//
+//        assertNull(manager.getSubtaskByID(subtask.getId()), "Подзадача не удалена");
+//    }
+
+    @Test
+    public void testGetAllSubtasks() throws IOException, InterruptedException {
+        Epic epic = new Epic("Epic", "desc");
+        manager.addEpic(epic);
+        manager.addSubtask(new Subtask("S1", "desc", epic.getId(),
+                Duration.ofMinutes(45), LocalDateTime.now()));
+        manager.addSubtask(new Subtask("S2", "desc", epic.getId(),
+                Duration.ofMinutes(45), LocalDateTime.now()));
+        manager.addSubtask(new Subtask("S3", "desc", epic.getId(),
+                Duration.ofMinutes(45), LocalDateTime.of(2025, 1, 1, 10, 0)));
+
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/subtasks"))
+                .GET()
+                .build();
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        assertEquals(200, response.statusCode());
+
+        List<?> list = gson.fromJson(response.body(), List.class);
+        assertEquals(2, list.size(), "Ожидалось 2 подзадачи");
+    }
+
+
+    @Test
+    public void testGetSubtaskWrongId() throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/subtasks/999"))
+                .GET()
+                .build();
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        assertEquals(404, response.statusCode(), "Ожидался статус 404 для несуществующего ID");
+    }
+
+    @Test
+    public void testPostWrongJson() throws IOException, InterruptedException {
+        String badJson = "{ bad json }";
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/subtasks"))
+                .POST(HttpRequest.BodyPublishers.ofString(badJson))
+                .build();
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        assertEquals(400, response.statusCode(), "Ожидалась ошибка при неверном JSON");
+    }
+}
