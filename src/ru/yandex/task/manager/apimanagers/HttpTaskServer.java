@@ -1,7 +1,6 @@
 package ru.yandex.task.manager.apimanagers;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+
 import com.sun.net.httpserver.HttpServer;
 import ru.yandex.task.manager.apimanagers.modelapi.*;
 import ru.yandex.task.manager.managers.Managers;
@@ -9,8 +8,6 @@ import ru.yandex.task.manager.managers.TaskManager;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.time.Duration;
-import java.time.LocalDateTime;
 
 public class HttpTaskServer {
     public static final int port = 8080;
