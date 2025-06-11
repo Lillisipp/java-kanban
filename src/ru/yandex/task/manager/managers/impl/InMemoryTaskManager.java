@@ -123,13 +123,13 @@ public class InMemoryTaskManager implements TaskManager {
         if (!hasOverlaps(subtask)) {
             subtasks.put(subtask.getId(), subtask);
             prioritizedTasks.add(subtask);
-        }
 
-        Epic epic = epics.get(subtask.getEpicId());
-        if (epic != null) {
-            epic.addSubtask(subtask.getId());
-            epic.updateStatus(subtasks);
-            epic.updateTimeEpic(subtasks);
+            Epic epic = epics.get(subtask.getEpicId());
+            if (epic != null) {
+                epic.addSubtask(subtask.getId());
+                epic.updateStatus(subtasks);
+                epic.updateTimeEpic(subtasks);
+            }
         }
     }
 

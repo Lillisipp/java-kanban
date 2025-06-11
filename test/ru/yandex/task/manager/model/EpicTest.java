@@ -95,24 +95,25 @@ class EpicTest {
         assertNotNull(historyManager, "Менеджер истории не должен быть null");
     }
 
-//    @Test
-//    void taskManagerAddsAndFindsDifferentTaskTypes() {
-//        TaskManager manager = new InMemoryTaskManager();
-//
-//        Task task = new Task("model.Task", "Desc", TaskType.TASK,
-//                Duration.ofMinutes(25), LocalDateTime.now());
-//        Epic epic = new Epic("model.Epic", "Desc");
-//        manager.addEpic(epic);
-//
-//        Subtask subtask = new Subtask("Sub", "Desc", epic.getId(),
-//                Duration.ofMinutes(45), LocalDateTime.now());
-//        manager.addTask(task);
-//        manager.addSubtask(subtask);
-//
-//        Assertions.assertEquals(task, manager.getTaskById(task.getId()));
-//        Assertions.assertEquals(epic, manager.getEpicById(epic.getId()));
-//        Assertions.assertEquals(subtask, manager.getSubtaskByID(subtask.getId()));
-//    }
+    @Test
+    void taskManagerAddsAndFindsDifferentTaskTypes() {
+        TaskManager manager = new InMemoryTaskManager();
+
+        Task task = new Task("model.Task", "Desc", TaskType.TASK,
+                Duration.ofMinutes(25), LocalDateTime.now());
+        Epic epic = new Epic("model.Epic", "Desc");
+        manager.addEpic(epic);
+
+        Subtask subtask = new Subtask("Sub", "Desc", epic.getId(),
+                Duration.ofMinutes(45), LocalDateTime.of(2025, 1, 1, 10, 0));
+        manager.addTask(task);
+        manager.addSubtask(subtask);
+
+        Assertions.assertEquals(task, manager.getTaskById(task.getId()));
+        Assertions.assertEquals(epic, manager.getEpicById(epic.getId()));
+        Assertions.assertEquals(subtask, manager.getSubtaskByID(subtask.getId()));
+    }
+
 
     @Test
     void tasksWithGivenAndGeneratedIdsDoNotConflict() {
