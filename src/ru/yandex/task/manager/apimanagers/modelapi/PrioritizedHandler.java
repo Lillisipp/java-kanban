@@ -31,7 +31,7 @@ public class PrioritizedHandler extends BaseHttpHandler {
                 sendBadRequest(exchange, "WRONG_PATH");
             }
         } catch (Exception e) {
-            sendBadRequest(exchange, "UNKNOWN_ERROR");
+            sendServerError(exchange);
         }
     }
 }

@@ -12,7 +12,7 @@ public class HistoryHandler extends BaseHttpHandler {
         super(manager);
     }
 
-    public void handle(HttpExchange exchange) {
+    public void handle(HttpExchange exchange) throws IOException {
         try {
             String method = exchange.getRequestMethod();
             if ("GET".equals(method)) {
@@ -21,7 +21,7 @@ public class HistoryHandler extends BaseHttpHandler {
                 exchange.sendResponseHeaders(405, 0);
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            sendServerError(exchange);
         }
     }
 

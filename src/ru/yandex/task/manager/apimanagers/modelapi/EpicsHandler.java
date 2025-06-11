@@ -21,7 +21,7 @@ public class EpicsHandler extends BaseHttpHandler {
         super(manager);
     }
 
-    public void handle(HttpExchange exchange) {
+    public void handle(HttpExchange exchange) throws IOException {
         try (exchange) {
             String method = exchange.getRequestMethod();
             String path = exchange.getRequestURI().getPath();
@@ -32,7 +32,7 @@ public class EpicsHandler extends BaseHttpHandler {
                 default -> sendMethodNotAllowed(exchange);
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            sendServerError(exchange);
         }
     }
 

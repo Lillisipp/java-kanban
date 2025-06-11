@@ -33,7 +33,7 @@ public class SubtasksHandler extends BaseHttpHandler {
                 sendBadRequest(exchange, "WRONG PATH");
             }
         } catch (Exception e) {
-            sendBadRequest(exchange, "UNKNOWN_ERROR");
+            sendServerError(exchange);
         }
     }
 

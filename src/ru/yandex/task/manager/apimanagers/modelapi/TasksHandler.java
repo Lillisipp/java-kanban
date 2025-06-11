@@ -35,7 +35,7 @@ public class TasksHandler extends BaseHttpHandler {
                 sendBadRequest(exchange, "Неверный путь.");
             }
         } catch (Exception e) {
-            sendBadRequest(exchange, "Внутренняя ошибка сервера: " + e.getMessage());
+            sendServerError(exchange);
         }
     }
 
