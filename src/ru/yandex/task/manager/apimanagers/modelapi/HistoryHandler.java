@@ -7,13 +7,12 @@ import ru.yandex.task.manager.managers.TaskManager;
 import java.io.IOException;
 
 public class HistoryHandler extends BaseHttpHandler {
-    private final TaskManager manager;
 
     public HistoryHandler(TaskManager manager) {
-        this.manager = manager;
+        super(manager);
     }
 
-    public void handle(HttpExchange exchange) throws IOException {
+    public void handle(HttpExchange exchange) {
         try {
             String method = exchange.getRequestMethod();
             if ("GET".equals(method)) {

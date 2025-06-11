@@ -13,15 +13,12 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 public class EpicsHandler extends BaseHttpHandler {
-    private final TaskManager manager;
-
     private static final Pattern SUBTASKS_BY_ID = Pattern.compile("^/epics/\\d*/subtasks$");
     private static final Pattern EPIC_BY_ID = Pattern.compile("^/epics/\\d*$");
     private static final Pattern GET_EPICS = Pattern.compile("^/epics$");
 
-
     public EpicsHandler(TaskManager manager) {
-        this.manager = manager;
+        super(manager);
     }
 
     public void handle(HttpExchange exchange) {
@@ -30,7 +27,7 @@ public class EpicsHandler extends BaseHttpHandler {
             String path = exchange.getRequestURI().getPath();
             switch (method) {
                 case "GET" -> handlerGet(exchange, path);
-                case "POST" -> handlePost(exchange, path);
+                case "POST" -> handlePost(exchange);
                 case "DELETE" -> handleDelete(exchange, path);
                 default -> sendMethodNotAllowed(exchange);
             }
@@ -71,7 +68,7 @@ public class EpicsHandler extends BaseHttpHandler {
     }
 
 
-    private void handlePost(HttpExchange exchange, String path) throws IOException {
+    private void handlePost(HttpExchange exchange) throws IOException {
         InputStream body = exchange.getRequestBody();
         String json = new String(body.readAllBytes(), DEFAULT_CHARSET);
         Epic epic;

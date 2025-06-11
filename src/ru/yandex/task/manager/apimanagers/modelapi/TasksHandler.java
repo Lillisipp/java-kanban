@@ -16,10 +16,9 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 public class TasksHandler extends BaseHttpHandler {
-    private final TaskManager manager;
 
     public TasksHandler(TaskManager manager) {
-        this.manager = manager;
+        super(manager);
     }
 
     @Override
@@ -99,9 +98,7 @@ public class TasksHandler extends BaseHttpHandler {
         }
 
         switch (method) {
-            case "GET" -> {
-                sendText(exchange, gson.toJson(task));
-            }
+            case "GET" -> sendText(exchange, gson.toJson(task));
             case "DELETE" -> {
                 manager.deleteTask(id);
                 exchange.sendResponseHeaders(200, 0);

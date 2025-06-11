@@ -15,10 +15,15 @@ import java.nio.charset.StandardCharsets;
 public abstract class BaseHttpHandler implements HttpHandler {
     private static final String UPDATED_SUCCESSFULLY = "TASK UPDATED SUCCESSFULLY";
     private static final String ADDED_SUCCESSFULLY = "SUBTASK ADDED SUCCESSFULLY";
-
     protected static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
-    protected TaskManager manager;
+
     protected final Gson gson = GsonUtils.getGson();
+
+    protected TaskManager manager;
+
+    public BaseHttpHandler(TaskManager manager) {
+        this.manager = manager;
+    }
 
     protected void sendText(HttpExchange exchange, String text) throws IOException {
         byte[] resp = text.getBytes(DEFAULT_CHARSET);

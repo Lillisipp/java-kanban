@@ -10,10 +10,9 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 public class PrioritizedHandler extends BaseHttpHandler {
-    private final TaskManager manager;
 
     public PrioritizedHandler(TaskManager manager) {
-        this.manager = manager;
+        super(manager);
     }
 
     public void handle(HttpExchange exchange) throws IOException {

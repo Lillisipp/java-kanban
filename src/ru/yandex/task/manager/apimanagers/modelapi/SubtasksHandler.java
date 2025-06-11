@@ -15,10 +15,9 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 public class SubtasksHandler extends BaseHttpHandler {
-    private final TaskManager manager;
 
     public SubtasksHandler(TaskManager manager) {
-        this.manager = manager;
+        super(manager);
     }
 
     @Override
@@ -49,7 +48,7 @@ public class SubtasksHandler extends BaseHttpHandler {
                 InputStream requestBody = exchange.getRequestBody();
                 byte[] bytes = requestBody.readAllBytes();
                 String string = new String(bytes, DEFAULT_CHARSET);
-                Subtask incomeSub = null;
+                Subtask incomeSub;
 
                 try {
                     incomeSub = gson.fromJson(string, Subtask.class);
@@ -63,7 +62,6 @@ public class SubtasksHandler extends BaseHttpHandler {
                 }
 
                 if (incomeSub.getId() > 0) {
-                    Task taskById = manager.getSubtaskByID(incomeSub.getId());
                     sendUpdateResult(exchange, incomeSub);
 
                 } else {
@@ -75,7 +73,7 @@ public class SubtasksHandler extends BaseHttpHandler {
     }
 
     private void handlePath2(HttpExchange exchange, String requestMethod, String path) throws IOException {
-        int id = 0;
+        int id;
 
         try {
             id = Integer.parseInt(path.split("/")[2]);
@@ -84,16 +82,15 @@ public class SubtasksHandler extends BaseHttpHandler {
             return;
         }
 
-        Task task = manager.getTaskById(id);
-        if (!(task instanceof Subtask)) {
-            sendNotFound(exchange);
-            return;
-        }
-
         switch (requestMethod) {
             case "GET" -> {
-                String response = gson.toJson(task);
-                sendText(exchange, response);
+                Task task = manager.getSubtaskByID(id);
+                if (task == null) {
+                    sendNotFound(exchange);
+                } else {
+                    String response = gson.toJson(task);
+                    sendText(exchange, response);
+                }
             }
             case "DELETE" -> {
                 manager.deleteSubtask(id);
