@@ -1,5 +1,6 @@
 package ru.yandex.task.manager.managers.impl;
 
+import ru.yandex.task.manager.exception.IntersectionException;
 import ru.yandex.task.manager.managers.HistoryManager;
 import ru.yandex.task.manager.managers.Managers;
 import ru.yandex.task.manager.managers.TaskManager;
@@ -80,7 +81,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Subtask getSubtask(int id) {
+    public Subtask getSubtaskByID(int id) {
         Subtask subtask = subtasks.get(id);
         historyManager.add(subtask);
         return subtask;
@@ -103,10 +104,11 @@ public class InMemoryTaskManager implements TaskManager {
         }
         task.setId(generatorID());
         if (hasOverlaps(task)) {
-            return;
+            throw new IntersectionException("Task %s has intersection".formatted(task.getNameTask()));
         }
         tasks.put(task.getId(), task);
         prioritizedTasks.add(task);
+
     }
 
     @Override
@@ -120,16 +122,18 @@ public class InMemoryTaskManager implements TaskManager {
 
         subtask.setId(generatorID()); // Назначаем подзадаче уникальный ID
 
-        subtasks.put(subtask.getId(), subtask);
         if (!hasOverlaps(subtask)) {
+            subtasks.put(subtask.getId(), subtask);
             prioritizedTasks.add(subtask);
-        }
 
-        Epic epic = epics.get(subtask.getEpicId());
-        if (epic != null) {
-            epic.addSubtask(subtask.getId());
-            epic.updateStatus(subtasks);
-            epic.updateTimeEpic(subtasks);
+            Epic epic = epics.get(subtask.getEpicId());
+            if (epic != null) {
+                epic.addSubtask(subtask.getId());
+                epic.updateStatus(subtasks);
+                epic.updateTimeEpic(subtasks);
+            }
+        } else {
+            throw new IntersectionException("Subtask %s has intersection".formatted(subtask.getNameTask()));
         }
     }
 
@@ -182,18 +186,22 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
+    @Override
     public HashMap<Integer, Task> getTasks() {
         return tasks;
     }
 
+    @Override
     public HashMap<Integer, Subtask> getSubtasks() {
         return subtasks;
     }
 
+    @Override
     public HashMap<Integer, Epic> getEpics() {
         return epics;
     }
 
+    @Override
     public HistoryManager getHistoryManager() {
         return historyManager;
     }
