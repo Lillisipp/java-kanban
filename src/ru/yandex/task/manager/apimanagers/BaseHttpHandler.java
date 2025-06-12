@@ -76,8 +76,6 @@ public abstract class BaseHttpHandler implements HttpHandler {
             sendUpdatedSuccessfully(exchange);
         } catch (IntersectionException e) {
             sendHasInteractions(exchange);
-        } catch (Exception e) {
-            sendBadRequest(exchange, e.getMessage());
         }
     }
 

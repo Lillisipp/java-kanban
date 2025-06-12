@@ -9,6 +9,8 @@ import ru.yandex.task.manager.managers.TaskManager;
 import ru.yandex.task.manager.managers.impl.InMemoryTaskManager;
 import ru.yandex.task.manager.model.Epic;
 import ru.yandex.task.manager.model.Subtask;
+import ru.yandex.task.manager.model.Task;
+import ru.yandex.task.manager.model.enums.TaskType;
 import ru.yandex.task.manager.utils.GsonUtils;
 
 import java.io.IOException;
@@ -180,5 +182,29 @@ public class HttpTaskManagerSubtaskTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(406, response.statusCode());
+    }
+
+    @Test
+    void shouldReturn500OnServerError() throws Exception {
+        taskServer.stop();
+        taskServer = new HttpTaskServer(null);
+        taskServer.start();
+
+        Epic epic = new Epic("Epic", "desc");
+        manager.addEpic(epic);
+        Subtask subtask = new Subtask("S1", "desc", epic.getId(),
+                Duration.ofMinutes(45), LocalDateTime.now());
+        manager.addSubtask(subtask);
+
+        String json = gson.toJson(subtask);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/subtasks"))
+                .POST(HttpRequest.BodyPublishers.ofString(json))
+                .build();
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        assertEquals(500, response.statusCode());
     }
 }

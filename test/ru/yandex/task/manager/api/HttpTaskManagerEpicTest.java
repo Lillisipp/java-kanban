@@ -8,6 +8,7 @@ import ru.yandex.task.manager.apimanagers.HttpTaskServer;
 import ru.yandex.task.manager.managers.TaskManager;
 import ru.yandex.task.manager.managers.impl.InMemoryTaskManager;
 import ru.yandex.task.manager.model.Epic;
+import ru.yandex.task.manager.model.Subtask;
 import ru.yandex.task.manager.utils.GsonUtils;
 
 import java.io.IOException;
@@ -15,6 +16,8 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -117,4 +120,27 @@ public class HttpTaskManagerEpicTest {
         assertNotNull(subtasks, "Список подзадач не найден");
         assertTrue(subtasks.isEmpty(), "Список подзадач должен быть пуст");
     }
+    @Test
+    void shouldReturn500OnServerError() throws Exception {
+        taskServer.stop();
+        taskServer = new HttpTaskServer(null);
+        taskServer.start();
+
+        Epic epic = new Epic("Epic", "desc");
+        manager.addEpic(epic);
+
+
+        String json = gson.toJson(epic);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/epics"))
+                .POST(HttpRequest.BodyPublishers.ofString(json))
+                .build();
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        assertEquals(500, response.statusCode());
+    }
+
+
 }
