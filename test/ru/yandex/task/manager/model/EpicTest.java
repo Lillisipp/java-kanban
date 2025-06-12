@@ -125,7 +125,7 @@ class EpicTest {
         manager.addTask(task1);
 
         Task task2 = new Task("Task2", "Desc", TaskType.TASK,
-                Duration.ofMinutes(45), LocalDateTime.now());
+                Duration.ofMinutes(45), LocalDateTime.of(2025, 1, 1, 10, 0));
         task2.setId(manager.generatorID());
         manager.addTask(task2);
 

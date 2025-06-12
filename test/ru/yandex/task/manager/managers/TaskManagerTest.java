@@ -1,6 +1,7 @@
 package ru.yandex.task.manager.managers;
 
 import org.junit.jupiter.api.Test;
+import ru.yandex.task.manager.exception.IntersectionException;
 import ru.yandex.task.manager.model.Epic;
 import ru.yandex.task.manager.model.Subtask;
 import ru.yandex.task.manager.model.Task;
@@ -40,12 +41,11 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     @Test
     void shouldNotAllowOverlappingTasks() { //проверка пересечений
         Task task1 = new Task("Task 1", "t1", TaskType.TASK, Duration.ofMinutes(60), LocalDateTime.of(2025, 1, 1, 10, 0));
-        Task task2 = new Task("Task 2", "t2", TaskType.TASK, Duration.ofMinutes(30), LocalDateTime.of(2025, 1, 1, 10, 30));
+        Task task2 = new Task("Task 2", "t2", TaskType.TASK, Duration.ofMinutes(60), LocalDateTime.of(2025, 1, 1, 10, 0));
 
         manager.addTask(task1);
-        manager.addTask(task2);
 
-        assertNull(manager.getTaskById(task2.getId())); // Вторая задача пересекается и не должна быть добавлена
+        assertThrows(IntersectionException.class, ()->manager.addTask(task2));
     }
 
     @Test
@@ -54,7 +54,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         manager.addEpic(epic);
 
         Subtask s1 = new Subtask("Sub1", "d", epic.getId(), Duration.ofMinutes(10), LocalDateTime.now());
-        Subtask s2 = new Subtask("Sub2", "d", epic.getId(), Duration.ofMinutes(10), LocalDateTime.now());
+        Subtask s2 = new Subtask("Sub2", "d", epic.getId(), Duration.ofMinutes(10), LocalDateTime.of(2025, 1, 1, 10, 0));
         manager.addSubtask(s1);
         manager.addSubtask(s2);
 
@@ -68,7 +68,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
         Subtask s1 = new Subtask("Sub1", "d", epic.getId(), Duration.ofMinutes(10), LocalDateTime.now());
         s1.setStatus(Status.DONE);
-        Subtask s2 = new Subtask("Sub2", "d", epic.getId(), Duration.ofMinutes(10), LocalDateTime.now());
+        Subtask s2 = new Subtask("Sub2", "d", epic.getId(), Duration.ofMinutes(10), LocalDateTime.of(2025,1,1, 1,1));
         s2.setStatus(Status.DONE);
         manager.addSubtask(s1);
         manager.addSubtask(s2);

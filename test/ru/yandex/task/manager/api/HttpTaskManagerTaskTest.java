@@ -115,7 +115,7 @@ public class HttpTaskManagerTaskTest {
                 LocalDateTime.of(2025, 1, 1, 10, 0)));
         manager.addTask(new Task("Task 2", "Desc 2",
                 TaskType.TASK, Duration.ofMinutes(60),
-                LocalDateTime.of(2025, 1, 1, 10, 0)));
+                LocalDateTime.of(2027, 1, 1, 10, 0)));
 
         manager.addTask(new Task("Task 3", "Desc 3",
                 TaskType.TASK, Duration.ofMinutes(60),
@@ -129,7 +129,7 @@ public class HttpTaskManagerTaskTest {
         assertEquals(200, response.statusCode());
 
         List<?> tasks = gson.fromJson(response.body(), List.class);
-        assertEquals(2, tasks.size(), "Некорректное количество задач");
+        assertEquals(3, tasks.size(), "Некорректное количество задач");
     }
 
 

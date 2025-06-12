@@ -116,8 +116,6 @@ public class HttpTaskManagerSubtaskTest {
         manager.addSubtask(new Subtask("S1", "desc", epic.getId(),
                 Duration.ofMinutes(45), LocalDateTime.now()));
         manager.addSubtask(new Subtask("S2", "desc", epic.getId(),
-                Duration.ofMinutes(45), LocalDateTime.now()));
-        manager.addSubtask(new Subtask("S3", "desc", epic.getId(),
                 Duration.ofMinutes(45), LocalDateTime.of(2025, 1, 1, 10, 0)));
 
 
