@@ -15,6 +15,7 @@ import java.nio.charset.StandardCharsets;
 public abstract class BaseHttpHandler implements HttpHandler {
     private static final String UPDATED_SUCCESSFULLY = "TASK UPDATED SUCCESSFULLY";
     private static final String ADDED_SUCCESSFULLY = "SUBTASK ADDED SUCCESSFULLY";
+    private static final String INTERNAL_SERVER_ERROR = "Error occurred during request";
     protected static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
     protected final Gson gson = GsonUtils.getGson();
@@ -58,8 +59,9 @@ public abstract class BaseHttpHandler implements HttpHandler {
     }
 
     protected void sendServerError(HttpExchange exchange) throws IOException {
-        exchange.sendResponseHeaders(500, -1);
-        exchange.getResponseBody().close();
+        byte[] responseBytes = INTERNAL_SERVER_ERROR.getBytes(DEFAULT_CHARSET);
+        exchange.sendResponseHeaders(500, responseBytes.length);
+        exchange.getResponseBody().write(responseBytes);
     }
 
     private void sendUpdatedSuccessfully(HttpExchange exchange) throws IOException {

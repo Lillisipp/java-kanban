@@ -17,48 +17,23 @@ public class PrioritizedHandler extends BaseHttpHandler {
 
     public void handle(HttpExchange exchange) throws IOException {
         try (exchange) {
-            String path = exchange.getRequestURI().getPath();
-            String requestMethod = exchange.getRequestMethod();
-            if (Pattern.matches("^/prioritized$", path)) {
-                if (requestMethod.equals("GET")) {
-                    List<Task> prioritizedTasks = manager.getPrioritizedTasks();
-                    String response = gson.toJson(prioritizedTasks);
-                    sendText(exchange, response);
+            try {
+                String path = exchange.getRequestURI().getPath();
+                String requestMethod = exchange.getRequestMethod();
+                if (Pattern.matches("^/prioritized$", path)) {
+                    if (requestMethod.equals("GET")) {
+                        List<Task> prioritizedTasks = manager.getPrioritizedTasks();
+                        String response = gson.toJson(prioritizedTasks);
+                        sendText(exchange, response);
+                    } else {
+                        sendMethodNotAllowed(exchange);
+                    }
                 } else {
-                    sendMethodNotAllowed(exchange);
+                    sendBadRequest(exchange, "WRONG_PATH");
                 }
-            } else {
-                sendBadRequest(exchange, "WRONG_PATH");
+            } catch (Exception e) {
+                sendServerError(exchange);
             }
-        } catch (Exception e) {
-            sendServerError(exchange);
         }
     }
 }
-
-
-//    public void handle(HttpExchange exchange) throws IOException {
-//        try {
-//            String method = exchange.getRequestMethod();
-//            switch (method) {
-//                case "GET":
-//                    handlerGetTask(exchange);
-//                    break;
-//                default:
-//                    exchange.sendResponseHeaders(405, 0);
-//            }
-//
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        } finally {
-//            exchange.close();
-//        }
-//    }
-//
-//    private void handlerGetTask(HttpExchange exchange) throws IOException {
-//        List<Task> PrioritizedTasks = manager.getPrioritizedTasks();
-//        String json = gson.toJson(PrioritizedTasks);
-//        sendText(exchange, json);
-//    }
-//
-//}

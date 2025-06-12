@@ -23,17 +23,19 @@ public class SubtasksHandler extends BaseHttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         try (exchange) {
-            String path = exchange.getRequestURI().getPath();
-            String requestMethod = exchange.getRequestMethod();
-            if (Pattern.matches("^/subtasks$", path)) {
-                handlePath1(exchange, requestMethod);
-            } else if (Pattern.matches("^/subtasks/[1-9]\\d*$", path)) {
-                handlePath2(exchange, requestMethod, path);
-            } else {
-                sendBadRequest(exchange, "WRONG PATH");
+            try {
+                String path = exchange.getRequestURI().getPath();
+                String requestMethod = exchange.getRequestMethod();
+                if (Pattern.matches("^/subtasks$", path)) {
+                    handlePath1(exchange, requestMethod);
+                } else if (Pattern.matches("^/subtasks/[1-9]\\d*$", path)) {
+                    handlePath2(exchange, requestMethod, path);
+                } else {
+                    sendBadRequest(exchange, "WRONG PATH");
+                }
+            } catch (Exception e) {
+                sendServerError(exchange);
             }
-        } catch (Exception e) {
-            sendServerError(exchange);
         }
     }
 

@@ -23,16 +23,18 @@ public class EpicsHandler extends BaseHttpHandler {
 
     public void handle(HttpExchange exchange) throws IOException {
         try (exchange) {
-            String method = exchange.getRequestMethod();
-            String path = exchange.getRequestURI().getPath();
-            switch (method) {
-                case "GET" -> handlerGet(exchange, path);
-                case "POST" -> handlePost(exchange);
-                case "DELETE" -> handleDelete(exchange, path);
-                default -> sendMethodNotAllowed(exchange);
+            try {
+                String method = exchange.getRequestMethod();
+                String path = exchange.getRequestURI().getPath();
+                switch (method) {
+                    case "GET" -> handlerGet(exchange, path);
+                    case "POST" -> handlePost(exchange);
+                    case "DELETE" -> handleDelete(exchange, path);
+                    default -> sendMethodNotAllowed(exchange);
+                }
+            } catch (Exception e) {
+                sendServerError(exchange);
             }
-        } catch (Exception e) {
-            sendServerError(exchange);
         }
     }
 

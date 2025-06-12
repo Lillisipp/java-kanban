@@ -15,7 +15,10 @@ import ru.yandex.task.manager.model.enums.TaskType;
 import ru.yandex.task.manager.utils.GsonUtils;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -176,4 +179,24 @@ public class HttpTaskManagerTaskTest {
         assertEquals(406, response.statusCode());
     }
 
+    @Test
+    void shouldReturn500OnServerError() throws Exception {
+        taskServer.stop();
+        taskServer = new HttpTaskServer(null);
+        taskServer.start();
+
+        Task task = new Task("S2", "desc", TaskType.TASK,
+                Duration.ofMinutes(45), LocalDateTime.now());
+
+        String json = gson.toJson(task);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/tasks"))
+                .POST(HttpRequest.BodyPublishers.ofString(json))
+                .build();
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        assertEquals(500, response.statusCode());
+    }
 }

@@ -25,17 +25,19 @@ public class TasksHandler extends BaseHttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         try (exchange) {
-            String path = exchange.getRequestURI().getPath();
-            String method = exchange.getRequestMethod();
-            if (Pattern.matches("^/tasks$", path)) {
-                handleTasks(exchange, method);
-            } else if (Pattern.matches("^/tasks/\\d+$", path)) {
-                handleTaskById(exchange, method, path);
-            } else {
-                sendBadRequest(exchange, "Неверный путь.");
+            try {
+                String path = exchange.getRequestURI().getPath();
+                String method = exchange.getRequestMethod();
+                if (Pattern.matches("^/tasks$", path)) {
+                    handleTasks(exchange, method);
+                } else if (Pattern.matches("^/tasks/\\d+$", path)) {
+                    handleTaskById(exchange, method, path);
+                } else {
+                    sendBadRequest(exchange, "Неверный путь.");
+                }
+            } catch (Exception e) {
+                sendServerError(exchange);
             }
-        } catch (Exception e) {
-            sendServerError(exchange);
         }
     }
 
