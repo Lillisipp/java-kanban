@@ -13,7 +13,7 @@ public class HistoryHandler extends BaseHttpHandler {
     }
 
     public void handle(HttpExchange exchange) throws IOException {
-        try(exchange){
+        try (exchange) {
             try {
                 String method = exchange.getRequestMethod();
                 if ("GET".equals(method)) {
