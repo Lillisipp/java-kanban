@@ -13,7 +13,8 @@ public class Subtask extends Task {
             String description,
             int epicId,
             Duration duration,
-            LocalDateTime startTime) {
+            LocalDateTime startTime
+    ) {
         super(nameTask, description, TaskType.SUBTASK, duration, startTime);
         this.epicId = epicId;
     }
@@ -24,9 +25,7 @@ public class Subtask extends Task {
 
     @Override
     public String toString() {
-        return "model.Subtask{" +
-                "epicId=" + epicId +
-                '}';
+        return "model.Subtask{epicId=%s}".formatted(epicId);
     }
 
     @Override

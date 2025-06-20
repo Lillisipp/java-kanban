@@ -190,8 +190,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public Subtask getSubtask(int id) {
-        return super.getSubtask(id);
+    public Subtask getSubtaskByID(int id) {
+        return super.getSubtaskByID(id);
     }
 
     @Override

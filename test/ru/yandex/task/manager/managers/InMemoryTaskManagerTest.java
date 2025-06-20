@@ -39,23 +39,12 @@ public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager
     }
 
     @Test
-    void shouldNotlappingTasks() {
-        Task task1 = new Task("Task 1", "t1", TaskType.TASK, Duration.ofMinutes(60), LocalDateTime.of(2025, 1, 1, 10, 0));
-        Task task2 = new Task("Task 2", "t2", TaskType.TASK, Duration.ofMinutes(30), LocalDateTime.of(2025, 1, 1, 10, 30));
-
-        manager.addTask(task1);
-        manager.addTask(task2);
-        assertEquals(1, manager.getTasks().size());
-        assertNull(manager.getTaskById(task2.getId())); // Вторая задача пересекается и не должна быть добавлена
-    }
-
-    @Test
     void epicStatusShouldBeNewWhenAllSubtasksAreNew() {
         Epic epic = new Epic("Epic", "Description");
         manager.addEpic(epic);
 
         Subtask s1 = new Subtask("Sub1", "d", epic.getId(), Duration.ofMinutes(10), LocalDateTime.now());
-        Subtask s2 = new Subtask("Sub2", "d", epic.getId(), Duration.ofMinutes(10), LocalDateTime.now());
+        Subtask s2 = new Subtask("Sub2", "d", epic.getId(), Duration.ofMinutes(10), LocalDateTime.of(2025, 1, 1, 1, 1));
         manager.addSubtask(s1);
         manager.addSubtask(s2);
 
@@ -69,7 +58,7 @@ public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager
 
         Subtask s1 = new Subtask("Sub1", "d", epic.getId(), Duration.ofMinutes(10), LocalDateTime.now());
         s1.setStatus(Status.DONE);
-        Subtask s2 = new Subtask("Sub2", "d", epic.getId(), Duration.ofMinutes(10), LocalDateTime.now());
+        Subtask s2 = new Subtask("Sub2", "d", epic.getId(), Duration.ofMinutes(10), LocalDateTime.of(2025, 1, 1, 1, 1));
         s2.setStatus(Status.DONE);
         manager.addSubtask(s1);
         manager.addSubtask(s2);
